@@ -1,31 +1,28 @@
-*{
+* {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
   user-select: none;
-  -webkit-tap-highlight-color: none;
-}*
+  -webkit-tap-highlight-color: transparent;
+}
 
- 
 html {
   scroll-behavior: smooth;
 }
+
 img {
- object-fit: cover !important;
   width: 100% !important;
   height: 100% !important;
+  object-fit: cover !important;
+  display: block;
 }
+
 body {
   min-height: 100vh;
-
   font-family: "Oxanium", sans-serif;
-
   background: whitesmoke;
-
   color: #232833;
-
   overflow-x: hidden;
-
   -webkit-tap-highlight-color: transparent;
 }
 
@@ -49,19 +46,13 @@ a {
 
 .sr-only {
   position: absolute;
-
   width: 1px;
   height: 1px;
-
   padding: 0;
   margin: -1px;
-
   overflow: hidden;
-
   clip: rect(0, 0, 0, 0);
-
   white-space: nowrap;
-
   border: 0;
 }
 
@@ -71,18 +62,12 @@ a {
 
 .confirm {
   min-height: 100vh;
-
   width: 100%;
-
   display: flex;
-
   flex-direction: column;
-
   align-items: center;
   justify-content: center;
-
   padding: 25px;
-
   text-align: center;
 }
 
@@ -92,54 +77,38 @@ a {
 
 .logo {
   width: min(90vw, 360px);
-
   background: transparent;
 }
 
 .confirm .logo {
   margin-bottom: 22px;
-
   animation: logoFloat 3s ease-in-out infinite;
 }
 
 .logo-box {
   display: flex;
-
   align-items: center;
   justify-content: center;
-
   gap: clamp(7px, 2vw, 12px);
-
   background: transparent;
 }
 
 .logo-icon {
   display: inline-block;
-
   font-size: clamp(26px, 7vw, 42px);
-
   color: #222;
-
   background: transparent;
-
   animation: swordAttack 1.5s ease infinite;
 }
 
 .name-logo {
   margin: 0;
-
   font-family: Arial, sans-serif;
-
   font-size: clamp(25px, 7vw, 42px);
-
   font-weight: 900;
-
   letter-spacing: clamp(1px, 0.5vw, 2px);
-
   color: #232833;
-
   background: transparent;
-
   text-shadow: 0 3px 8px rgba(0, 0, 0, 0.12);
 }
 
@@ -149,53 +118,38 @@ a {
 
 .logo-line {
   position: relative;
-
   display: flex;
-
   width: 100%;
-
   height: 7px;
-
   margin-top: 8px;
-
   overflow: hidden;
-
   border-radius: 50px;
-
   background: transparent;
 }
 
 .logo-line span {
   flex: 1;
-
   animation: energy 2s infinite alternate;
 }
 
 .logo-line .blue {
   background: #00c8ff;
-
   clip-path: polygon(0 0, 100% 0, 95% 100%, 0 100%);
 }
 
 .logo-line .red {
   background: #ff2e3a;
-
   clip-path: polygon(5% 0, 100% 0, 100% 100%, 0 100%);
 }
 
 .logo-line::after {
   content: "";
-
   position: absolute;
-
   top: 0;
   left: -100%;
-
   width: 60%;
   height: 100%;
-
   background: linear-gradient(90deg, transparent, white, transparent);
-
   animation: scan 2s infinite;
 }
 
@@ -205,27 +159,18 @@ a {
 
 .condition {
   width: min(100%, 600px);
-
   padding: clamp(18px, 4vw, 28px);
-
   border: 1px solid #ccc;
-
   border-radius: 18px;
-
   line-height: 1.8;
-
   background: rgba(255, 255, 255, 0.6);
-
   backdrop-filter: blur(20px);
-
   box-shadow: 0 15px 40px rgba(0, 0, 0, 0.06);
 }
 
 .condition h1 {
   margin-bottom: 10px;
-
   font-size: clamp(22px, 5vw, 30px);
-
   font-weight: 700;
 }
 
@@ -235,7 +180,6 @@ a {
 
 .condition a {
   color: #006eff;
-
   text-decoration: underline;
 }
 
@@ -245,29 +189,19 @@ a {
 
 #continue {
   margin-top: 18px;
-
   padding: 12px 28px;
-
   border: none;
-
   border-radius: 9px;
-
   background: #08aa00;
-
   color: white;
-
   font-size: 18px;
-
   font-weight: 700;
-
   transition: 0.2s ease;
 }
 
 #continue:hover {
   background: #078800;
-
   transform: translateY(-2px);
-
   box-shadow: 0 8px 20px rgba(0, 130, 0, 0.2);
 }
 
@@ -281,9 +215,7 @@ a {
 
 .home {
   min-height: 100vh;
-
   display: flex;
-
   flex-direction: column;
 }
 
@@ -293,28 +225,21 @@ a {
 
 .head {
   position: fixed;
-
   top: 0;
   left: 0;
-
   z-index: 100;
 
   width: 100%;
-
   min-height: 80px;
 
   padding: 12px clamp(12px, 4vw, 30px);
 
   display: flex;
-
   align-items: center;
-
   justify-content: space-between;
 
   background: rgba(255, 255, 255, 0.96);
-
   backdrop-filter: blur(12px);
-
   border-bottom: 1px solid rgba(0, 0, 0, 0.08);
 }
 
@@ -328,7 +253,6 @@ a {
 
 .head .logo-icon {
   font-size: clamp(20px, 4vw, 32px);
-
   animation: none;
 }
 
@@ -338,7 +262,6 @@ a {
 
 .head .logo-line {
   height: 6px;
-
   margin-top: 5px;
 }
 
@@ -351,26 +274,21 @@ a {
   height: 45px;
 
   display: flex;
-
   align-items: center;
   justify-content: center;
 
   border: none;
-
   border-radius: 50%;
 
   background: #232833;
-
   color: white;
 
   font-size: 17px;
-
   transition: 0.25s ease;
 }
 
 .head button:hover {
   background: #11151c;
-
   transform: scale(1.08);
 }
 
@@ -388,9 +306,10 @@ a {
 
 .body {
   width: min(1250px, 100%);
-
   margin: 0 auto;
+
   padding: 100px 20px 30px;
+
   display: grid;
 
   grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -407,9 +326,11 @@ a {
 
   display: block;
 
-  width: 100%;
+  width: 100% !important;
+  height: 100% !important;
 
-  height: 100%;
+  min-width: 0;
+  min-height: 0;
 
   overflow: hidden;
 
@@ -429,10 +350,14 @@ a {
 .game img {
   display: block;
 
-  width: 100%;
-  height: 100%;
+  width: 100% !important;
+  height: 100% !important;
 
-  object-fit: cover;
+  min-width: 100%;
+  min-height: 100%;
+
+  object-fit: cover !important;
+  object-position: center;
 
   border-radius: 18px;
 
@@ -449,7 +374,6 @@ a {
 
 .game:hover img {
   transform: scale(1.05);
-
   filter: brightness(1.08);
 }
 
@@ -472,14 +396,14 @@ a {
   border-radius: 50px;
 
   background: #ff2e3a;
-
   color: white;
 
   font-size: 13px;
-
   font-weight: 700;
 
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+
+  z-index: 2;
 }
 
 /* =========================================================
@@ -488,9 +412,7 @@ a {
 
 .popup {
   position: fixed;
-
   inset: 0;
-
   z-index: 1000;
 
   display: none;
@@ -501,7 +423,6 @@ a {
   padding: 15px;
 
   background: rgba(0, 0, 0, 0.55);
-
   backdrop-filter: blur(8px);
 }
 
@@ -509,7 +430,6 @@ a {
   position: relative;
 
   width: min(100%, 430px);
-
   max-height: 90vh;
 
   overflow-y: auto;
@@ -519,7 +439,6 @@ a {
   border-radius: 22px;
 
   background: white;
-
   color: #222;
 
   box-shadow: 0 25px 60px rgba(0, 0, 0, 0.3);
@@ -529,9 +448,7 @@ a {
 
 .popup-box h2 {
   margin-bottom: 25px;
-
   text-align: center;
-
   font-size: 28px;
 }
 
@@ -550,16 +467,13 @@ a {
   height: 40px;
 
   display: flex;
-
   align-items: center;
   justify-content: center;
 
   border: none;
-
   border-radius: 50%;
 
   background: #ff4757;
-
   color: white;
 
   font-size: 25px;
@@ -570,7 +484,6 @@ a {
 .close:hover,
 .close-btn:hover {
   transform: rotate(90deg) scale(1.05);
-
   background: #e84118;
 }
 
@@ -580,14 +493,12 @@ a {
 
 .setting-item {
   display: flex;
-
   align-items: center;
   justify-content: space-between;
 
   gap: 15px;
 
   margin-bottom: 15px;
-
   padding: 15px 18px;
 
   border-radius: 15px;
@@ -599,25 +510,19 @@ a {
 
 .setting-item .text {
   font-size: 17px;
-
   font-weight: 600;
 }
 
 .sound-toggle {
   padding: 0;
-
   border: none;
-
   background: transparent;
-
   color: inherit;
 }
 
 .sound-toggle i {
   font-size: 32px;
-
   color: #00b900;
-
   transition: 0.2s;
 }
 
@@ -631,7 +536,6 @@ a {
 
 .volume-box {
   margin: 15px 0;
-
   padding: 18px;
 
   border-radius: 15px;
@@ -643,11 +547,8 @@ a {
 
 .volume-title {
   display: flex;
-
   align-items: center;
-
   gap: 10px;
-
   margin-bottom: 15px;
 }
 
@@ -661,25 +562,19 @@ a {
 
 .volume-control {
   display: flex;
-
   align-items: center;
-
   gap: 12px;
 }
 
 #curseur {
   width: 100%;
-
   accent-color: #4f46e5;
-
   cursor: pointer;
 }
 
 #volume-value {
   min-width: 45px;
-
   font-size: 14px;
-
   font-weight: 700;
 }
 
@@ -689,7 +584,6 @@ a {
 
 .links {
   display: flex;
-
   flex-wrap: wrap;
 
   align-items: center;
@@ -698,7 +592,6 @@ a {
   gap: 12px;
 
   margin-top: 15px;
-
   padding: 15px;
 
   border-radius: 15px;
@@ -710,9 +603,7 @@ a {
 
 .links a {
   color: #006eff;
-
   font-size: 14px;
-
   text-decoration: none;
 }
 
@@ -729,17 +620,14 @@ a {
   width: 100%;
 
   padding: 13px;
-
   margin-bottom: 12px;
 
   border: 1px solid #ddd;
-
   border-radius: 12px;
 
   outline: none;
 
   background: #f8f9fb;
-
   color: #222;
 
   font-size: 15px;
@@ -748,14 +636,12 @@ a {
 .popup input:focus,
 .popup textarea:focus {
   border-color: #006eff;
-
   box-shadow: 0 0 0 3px rgba(0, 110, 255, 0.1);
 }
 
 .popup textarea {
   min-height: 120px;
-
-  resize: vertical;
+  resize: none !important;
 }
 
 form button[type="submit"] {
@@ -764,15 +650,12 @@ form button[type="submit"] {
   padding: 13px;
 
   border: none;
-
   border-radius: 12px;
 
   background: #006eff;
-
   color: white;
 
   font-size: 16px;
-
   font-weight: 800;
 
   transition: 0.2s;
@@ -788,9 +671,7 @@ form button[type="submit"]:hover {
 
 .policy-window {
   position: fixed;
-
   inset: 0;
-
   z-index: 2000;
 
   display: none;
@@ -801,7 +682,6 @@ form button[type="submit"]:hover {
   padding: 20px;
 
   background: rgba(0, 0, 0, 0.65);
-
   backdrop-filter: blur(8px);
 }
 
@@ -809,7 +689,6 @@ form button[type="submit"]:hover {
   position: relative;
 
   width: min(95%, 750px);
-
   max-height: 85vh;
 
   overflow-y: auto;
@@ -819,7 +698,6 @@ form button[type="submit"]:hover {
   border-radius: 18px;
 
   background: white;
-
   color: #222;
 
   box-shadow: 0 25px 60px rgba(0, 0, 0, 0.35);
@@ -837,7 +715,6 @@ form button[type="submit"]:hover {
   background: linear-gradient(135deg, #667eea, #764ba2);
 
   -webkit-background-clip: text;
-
   background-clip: text;
 
   color: transparent;
@@ -845,7 +722,6 @@ form button[type="submit"]:hover {
 
 .policy-content h3 {
   margin-top: 25px;
-
   margin-bottom: 8px;
 
   padding-left: 10px;
@@ -860,9 +736,7 @@ form button[type="submit"]:hover {
 .policy-content p,
 .policy-content li {
   color: #444;
-
   font-size: 15px;
-
   line-height: 1.8;
 }
 
@@ -892,13 +766,11 @@ form button[type="submit"]:hover {
 @keyframes swordAttack {
   0% {
     transform: rotate(0) scale(1);
-
     filter: drop-shadow(0 0 0 transparent);
   }
 
   20% {
     transform: rotate(-25deg) scale(1.2);
-
     filter: drop-shadow(0 0 15px #00c8ff);
   }
 
@@ -914,13 +786,11 @@ form button[type="submit"]:hover {
 @keyframes energy {
   from {
     filter: brightness(1);
-
     transform: scaleX(0.8);
   }
 
   to {
     filter: brightness(2);
-
     transform: scaleX(1);
   }
 }
@@ -934,13 +804,11 @@ form button[type="submit"]:hover {
 @keyframes open {
   from {
     opacity: 0;
-
     transform: translateY(20px) scale(0.97);
   }
 
   to {
     opacity: 1;
-
     transform: translateY(0) scale(1);
   }
 }
@@ -948,14 +816,25 @@ form button[type="submit"]:hover {
 @keyframes slideUp {
   from {
     opacity: 0;
-
     transform: translateY(50px);
   }
 
   to {
     opacity: 1;
-
     transform: translateY(0);
+  }
+}
+
+/* =========================================================
+   LARGE DESKTOP
+========================================================= */
+
+@media (min-width: 1400px) {
+  .body {
+    width: min(1400px, 100%);
+    padding-left: 25px;
+    padding-right: 25px;
+    gap: 25px;
   }
 }
 
@@ -965,11 +844,21 @@ form button[type="submit"]:hover {
 
 @media (max-width: 900px) {
   .body {
+    width: 100%;
     grid-template-columns: repeat(2, minmax(0, 1fr));
-
     gap: 16px;
-
     padding: 100px 15px 30px;
+  }
+
+  .game {
+    width: 100% !important;
+    height: 100% !important;
+  }
+
+  .game img {
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: cover !important;
   }
 }
 
@@ -980,7 +869,6 @@ form button[type="submit"]:hover {
 @media (max-width: 600px) {
   .head {
     min-height: 68px;
-
     padding: 9px 12px;
   }
 
@@ -1002,6 +890,8 @@ form button[type="submit"]:hover {
   }
 
   .body {
+    width: 100%;
+
     grid-template-columns: repeat(2, minmax(0, 1fr));
 
     gap: 10px;
@@ -1009,12 +899,25 @@ form button[type="submit"]:hover {
     padding: 82px 10px 20px;
   }
 
+  .game {
+    width: 100% !important;
+    height: 100% !important;
+    min-width: 0;
+    min-height: 0;
+  }
+
+  .game img {
+    width: 100% !important;
+    height: 100% !important;
+    min-width: 100%;
+    min-height: 100%;
+    object-fit: cover !important;
+  }
+
   .one {
     top: 7px;
     right: 7px;
-
     padding: 4px 8px;
-
     font-size: 10px;
   }
 
@@ -1024,9 +927,7 @@ form button[type="submit"]:hover {
 
   .popup-box {
     width: 100%;
-
     padding: 25px 17px;
-
     border-radius: 18px;
   }
 
@@ -1036,11 +937,8 @@ form button[type="submit"]:hover {
 
   .policy-content {
     width: 100%;
-
     max-height: 90vh;
-
     padding: 25px 17px;
-
     border-radius: 15px;
   }
 }
@@ -1051,12 +949,22 @@ form button[type="submit"]:hover {
 
 @media (max-width: 380px) {
   .body {
+    width: 100%;
     grid-template-columns: 1fr;
-
     gap: 14px;
   }
 
- 
+  .game {
+    width: 100% !important;
+    height: 100% !important;
+  }
+
+  .game img {
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: cover !important;
+  }
+
   .head .name-logo {
     font-size: 18px;
   }
@@ -1077,14 +985,48 @@ form button[type="submit"]:hover {
     font-size: 14px;
   }
 }
-img {
-  object-fit: cover !important;
-  width: 100% !important;
-  height: 100% !important;
+
+/* =========================================================
+   EXTRA SMALL DEVICES
+========================================================= */
+
+@media (max-width: 320px) {
+  .body {
+    padding-left: 7px;
+    padding-right: 7px;
+    gap: 8px;
+  }
+
+  .game {
+    border-radius: 12px;
+  }
+
+  .game img {
+    border-radius: 12px;
+  }
+
+  .one {
+    top: 5px;
+    right: 5px;
+    padding: 3px 6px;
+    font-size: 9px;
+  }
 }
-textarea {
-  resize: none !important;
+
+/* =========================================================
+   LANDSCAPE MOBILE
+========================================================= */
+
+@media (max-width: 900px) and (orientation: landscape) {
+  .head {
+    min-height: 60px;
+  }
+
+  .body {
+    padding-top: 75px;
+  }
 }
+
 /* =========================================================
    REDUCED MOTION
 ========================================================= */
@@ -1094,11 +1036,8 @@ textarea {
   *::before,
   *::after {
     animation-duration: 0.01ms !important;
-
     animation-iteration-count: 1 !important;
-
     transition-duration: 0.01ms !important;
-
     scroll-behavior: auto !important;
   }
 }
