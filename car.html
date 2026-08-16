@@ -1,0 +1,742 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Course de click</title>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/howler/2.2.4/howler.min.js"></script>
+    <script src="score.js" defer></script>
+
+    <style>
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Poppins:wght@600;800&display=swap');
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html, body {
+    width: 100%;
+    height: 100%;
+    max-width: 100vw;
+    max-height: 100vh;
+    overflow: hidden !important; /* Bloque tout débordement de page */
+}
+
+body {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-family: 'Poppins', sans-serif;
+    background-color: #0b0c10;
+    transition: background 0.8s cubic-bezier(0.16, 1, 0.3, 1); 
+    user-select: none;
+    -webkit-user-select: none;
+    -webkit-touch-callout: none;
+    perspective: 1000px;
+}
+
+/* --- BOUTON RETOUR --- */
+#exit {
+    position: fixed;
+    top: 50%;
+    left: 0;
+    transform: translateY(-50%);
+    width: 55px;
+    height: 60px;
+    padding: 0;
+    border: none;
+    border-radius: 0 30px 30px 0;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-left: none;
+    color: #fff;
+    font-size: 22px;
+    cursor: pointer;
+    z-index: 10000;
+    transition: all 0.2s ease;
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+}
+
+#exit:active {
+    transform: translateY(-50%) scale(0.95);
+    background: rgba(255, 255, 255, 0.25);
+}
+
+/* --- COMPTE À REBOURS --- */
+.timer {
+    position: fixed;
+    inset: 0;
+    z-index: 2000;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: rgba(5, 5, 8, 0.85);
+    backdrop-filter: blur(12px);
+}
+
+.timer p {
+    font-size: clamp(90px, 25vw, 200px);
+    color: #fff;
+    font-weight: 900;
+    font-family: 'Orbitron', sans-serif;
+    text-shadow:
+        0 0 20px rgba(255, 255, 255, 0.8),
+        0 0 50px rgba(0, 217, 255, 0.6),
+        0 0 100px rgba(255, 0, 85, 0.6);
+    animation: pulse 1s infinite cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+@keyframes pulse {
+    0% { transform: scale(0.8); opacity: 0.5; }
+    50% { transform: scale(1.1); opacity: 1; }
+    100% { transform: scale(0.9); opacity: 0.8; }
+}
+
+.timer.go {
+    animation: hideTimer .6s ease-in forwards;
+}
+
+@keyframes hideTimer {
+    100% {
+        opacity: 0;
+        transform: scale(2);
+        visibility: hidden;
+    }
+}
+
+/* --- ECRANS DE VICTOIRE --- */
+.blue_wins,
+.red_wins {
+    position: fixed;
+    inset: 0;
+    z-index: 100000;
+    display: none;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    font-size: clamp(35px, 8vw, 70px);
+    font-weight: 900;
+    color: white;
+    backdrop-filter: blur(15px);
+    text-align: center;
+    text-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    animation: winPop 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+@keyframes winPop {
+    from { transform: scale(0.8); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+}
+
+.blue_wins {
+    background: radial-gradient(circle, rgba(0, 102, 255, 0.95), rgba(5, 15, 40, 0.98));
+    box-shadow: inset 0 0 100px #00d9ff;
+}
+
+.red_wins {
+    background: radial-gradient(circle, rgba(255, 0, 81, 0.95), rgba(40, 5, 15, 0.98));
+    box-shadow: inset 0 0 100px #ff0055;
+}
+
+.blue_wins i, .red_wins i {
+    margin-top: 15px;
+    color: #ffd700;
+    filter: drop-shadow(0 0 15px rgba(255, 215, 0, 0.8));
+    animation: floatCrown 2s infinite ease-in-out;
+}
+
+@keyframes floatCrown {
+    0%, 100% { transform: translateY(0) rotate(0deg); }
+    50% { transform: translateY(-15px) rotate(5deg); }
+}
+
+
+#red, #blue {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: white;
+    width: clamp(75px, 15vw, 85px);
+    height: clamp(75px, 15vw, 85px);
+    font-size: clamp(24px, 6vw, 32px);
+    border: 2px solid rgba(255, 255, 255, 0.6);
+    border-radius: 50%;
+    position: fixed;
+    
+    cursor: pointer;
+    z-index: 1000;
+    transition: transform 0.05s ease, box-shadow 0.1s ease;
+}
+
+#red {
+    background: linear-gradient(135deg, #ff0055, #990033);
+    left: 20px;
+    top: 20px;
+    transform: rotate(180deg);
+    box-shadow: 0 0 25px rgba(255, 0, 85, 0.8), inset 0 2px 5px rgba(255,255,255,0.7);
+}
+
+#blue {
+    background: linear-gradient(135deg, #0088ff, #004499);
+    right: 20px;
+    bottom: 20px;
+    box-shadow: 0 0 25px rgba(0, 136, 255, 0.8), inset 0 2px 5px rgba(255,255,255,0.7);
+}
+
+#red:active, #blue:active {
+    transform: rotate(180deg) scale(0.9);
+}
+
+@media (max-width: 480px) {
+    #red { left: 10px; bottom: 10px; }
+    #blue { right: 10px; bottom: 10px; }
+}
+
+/* --- SÉLECTEUR DE DÉCORS --- */
+.landscape-selector {
+    position: fixed;
+    inset: 0;
+    z-index: 100000;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+
+    width: 100vw;
+    height: 100vh;
+    padding: 20px;
+    background: linear-gradient(135deg, #0f172a, #1e293b);
+}
+
+.landscape-btn {
+    width: 100%;
+    max-width: 200px;
+    aspect-ratio: 1/1;
+    border: none;
+    border-radius: 25px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 15px;
+    cursor: pointer;
+    font-size: 3rem;
+    color: white;
+    background: rgba(255,255,255,.08);
+    backdrop-filter: blur(16px);
+    border: 1px solid rgba(255,255,255,.2);
+    box-shadow: 0 15px 35px rgba(0,0,0,.4);
+    transition: transform .3s ease, box-shadow .3s ease, border-color .3s;
+}
+
+.landscape-btn span {
+    font-size: 1.1rem;
+    font-weight: 800;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+}
+
+.landscape-btn:hover {
+    transform: translateY(-8px) scale(1.03);
+    box-shadow: 0 25px 50px rgba(0,0,0,.6);
+    border-color: rgba(255, 255, 255, 0.6);
+}
+
+.landscape-btn:active {
+    transform: scale(.95);
+}
+
+#desert { background: linear-gradient(145deg, #f6d365, #fda085); }
+#city { background: linear-gradient(145deg, #667eea, #764ba2); }
+#grassland { background: linear-gradient(145deg, #56ab2f, #a8e063); }
+
+@media (max-width: 900px) {
+    .landscape-selector { grid-template-columns: repeat(2, 1fr); }
+}
+
+/* --- PISTE DE COURSE 3D --- */
+.piste {
+    position: relative;
+    width: 60%;
+    height: 80vh;
+    border-radius: 24px;
+    overflow: hidden;
+    transition: all 0.6s ease;
+    z-index: 20; /* Passe au-dessus des décors */
+    transform: rotateX(15deg) scale(0.95);
+    transform-style: preserve-3d;
+    box-shadow: 0 30px 60px rgba(0, 0, 0, 0.8);
+}
+
+@keyframes roadMove {
+    0% { background-position-y: 0px; }
+    100% { background-position-y: 100px; }
+}
+
+.piste::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 6px;
+    height: 100%;
+    background: repeating-linear-gradient(
+        to bottom,
+        rgba(255,255,255,0.9) 0px,
+        rgba(255,255,255,0.9) 30px,
+        transparent 30px,
+        transparent 60px
+    );
+    z-index: 1;
+    opacity: 0.8;
+    filter: drop-shadow(0 0 6px rgba(255,255,255,0.8));
+}
+
+.piste::after {
+    content: '';
+    position: absolute;
+    top: 5%;
+    left: 0;
+    width: 100%;
+    height: 5%;
+    background-image: 
+        linear-gradient(45deg, #000 25%, transparent 25%), 
+        linear-gradient(-45deg, #000 25%, transparent 25%),
+        linear-gradient(45deg, transparent 75%, #000 75%),
+        linear-gradient(-45deg, transparent 75%, #000 75%);
+    background-size: 20px 20px;
+    background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
+    background-color: #fff;
+    box-shadow: 0 0 20px rgba(255, 255, 255, 0.9), 0 5px 15px rgba(0,0,0,0.5);
+    z-index: 1;
+    border-top: 2px solid #fff;
+    border-bottom: 2px solid #fff;
+}
+
+/* --- VOITURES ET POT D'ÉCHAPPEMENT --- */
+#red_bar, #blue_bar {
+    position: absolute;
+    bottom: 2%;
+    font-size: 2.8rem;
+    transition: bottom 0.12s cubic-bezier(0.25, 1, 0.5, 1);
+    z-index: 30;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+#red_bar{
+    left: 10%;
+}
+#blue_bar{
+    left: 65%;
+}
+#red_bar::after, #blue_bar::after {
+    content: '';
+    position: absolute;
+    bottom: -8px;
+    width: 12px;
+    height: 25px;
+    background: radial-gradient(circle, rgba(255,200,0,1) 0%, rgba(255,0,0,0) 80%);
+    border-radius: 50%;
+    filter: blur(2px);
+    animation: exhaust 0.1s infinite alternate;
+}
+
+@keyframes exhaust {
+    0% { transform: scale(0.8); opacity: 0.7; }
+    100% { transform: scale(1.3); opacity: 1; }
+}
+
+/* --- THÈMES DE PISTE --- */
+.body_desert {
+    background: radial-gradient(circle at 50% 30%, #ffd085 0%, #d96b43 50%, #2b0b04 100%);
+}
+
+.piste_desert {
+    background: 
+        linear-gradient(to bottom, rgba(0,0,0,0.2), rgba(0,0,0,0.6)),
+        repeating-linear-gradient(0deg, #3d3128, #3d3128 20px, #2a211a 20px, #2a211a 40px);
+    border-left: 14px dashed #ff9100;
+    border-right: 14px dashed #ff9100;
+    box-shadow: 0 25px 50px rgba(0,0,0,0.9), inset 0 0 60px rgba(0, 0, 0, 0.8);
+    animation: roadMove 0.4s linear infinite;
+}
+
+.red_desert { left: 25%; color: #ff3b00; text-shadow: 0 0 15px #ff5500; }
+.blue_desert { left: 68%; color: #00e5ff; text-shadow: 0 0 15px #00bfff; }
+
+.body_ville {
+    background: radial-gradient(circle at 50% 30%, #200b3b 0%, #0c0317 60%, #000000 100%);
+}
+
+.piste_ville {
+    background: 
+        radial-gradient(ellipse at center, rgba(31, 23, 54, 0.4) 0%, rgba(10, 8, 18, 0.9) 100%),
+        repeating-linear-gradient(0deg, #151724, #151724 20px, #0d0e17 20px, #0d0e17 40px);
+    border-left: 12px solid #ff0077;
+    border-right: 12px solid #00f0ff;
+    box-shadow: 0 0 50px rgba(0, 0, 0, 1), inset 0 0 40px rgba(0, 0, 0, 0.95);
+    animation: roadMove 0.3s linear infinite;
+}
+
+.red_ville { left: 25%; color: #ff0055; text-shadow: 0 0 15px #ff0055; }
+.blue_ville { left: 68%; color: #00f0ff; text-shadow: 0 0 15px #00f0ff; }
+
+.body_prairie {
+    background: radial-gradient(circle at 50% 20%, #a8e6cf 0%, #3b8d20 50%, #15380a 100%);
+}
+
+.piste_prairie {
+    background: 
+        linear-gradient(to bottom, rgba(0,0,0,0.1), rgba(0,0,0,0.5)),
+        repeating-linear-gradient(0deg, #2b3033, #2b3033 20px, #1f2326 20px, #1f2326 40px);
+    border-left: 14px solid #2ecc71;
+    border-right: 14px solid #2ecc71;
+    box-shadow: 0 25px 50px rgba(0,0,0,0.8), inset 0 0 45px rgba(0, 0, 0, 0.8);
+    animation: roadMove 0.35s linear infinite;
+}
+
+.red_prairie { left: 25%; color: #ff4757; text-shadow: 0 0 12px #ff6b81; }
+.blue_prairie { left: 68%; color: #1e90ff; text-shadow: 0 0 12px #70a1ff; }
+
+/* --- COUCHES DE DÉCORS (NETTES ET VISIBLES) --- */
+.decor-layer {
+    position: fixed;
+    inset: 0;
+    width: 100vw;
+    height: 100vh;
+    pointer-events: none;
+    z-index: 5; /* Bien en fond de plan */
+    opacity: 0;
+    transition: opacity 0.8s ease;
+    overflow: hidden;
+}
+
+/* Dunes */
+.dune { position: absolute; border-radius: 50%; }
+
+.dune-1 {
+    width: 60vw;
+    height: 35vh;
+    bottom: -10vh;
+    left: -10vw;
+    background: linear-gradient(135deg, #e07a5f 20%, #b55239 80%);
+    box-shadow: inset -20px 10px 30px rgba(0,0,0,0.4);
+}
+
+.dune-2 {
+    width: 65vw;
+    height: 35vh;
+    bottom: -10vh;
+    right: -10vw;
+    background: linear-gradient(225deg, #f2cc8f 10%, #d49a55 90%);
+    box-shadow: inset 20px 10px 30px rgba(0,0,0,0.35);
+}
+
+/* Lacs / Oasis */
+.lac {
+    position: absolute;
+    border-radius: 50%;
+    background: radial-gradient(circle at 30% 30%, #70e1ff 0%, #0083b0 70%, #004b66 100%);
+    box-shadow: 0 0 20px rgba(0, 217, 255, 0.6);
+    animation: lakeShimmer 4s infinite alternate ease-in-out;
+}
+
+.lac-1 {
+    width: 180px;
+    height: 90px;
+    top: 15vh;
+    left: 4vw;
+    transform: rotate(-12deg);
+}
+
+.lac-2 {
+    width: 220px;
+    height: 100px;
+    bottom: 15vh;
+    right: 4vw;
+    transform: rotate(8deg);
+}
+
+@keyframes lakeShimmer {
+    0% { filter: brightness(1); transform: scale(1); }
+    100% { filter: brightness(1.25); transform: scale(1.05); }
+}
+
+/* Éléments visuels (Soleil, Arbres, Immeubles) */
+.decor-obj {
+    position: absolute;
+    z-index: 6;
+}
+
+/* Soleil du désert */
+#decor-desert .decor-obj {
+    top: 8vh;
+    right: 6vw;
+    color: #ffe600;
+    font-size: clamp(3.5rem, 8vw, 6rem);
+    opacity: 0.95 !important;
+    filter: drop-shadow(0 0 25px #ffaa00);
+}
+
+/* Bâtiments de la ville */
+#decor-city .fa-building {
+    bottom: 5vh;
+    left: 3vw;
+    font-size: clamp(5rem, 12vw, 9rem);
+    color: #00f0ff !important;
+    opacity: 0.5 !important;
+    filter: drop-shadow(0 0 20px #00f0ff);
+}
+
+#decor-city .fa-city {
+    bottom: 5vh;
+    right: 3vw;
+    font-size: clamp(6rem, 14vw, 10rem);
+    color: #ff0077 !important;
+    opacity: 0.5 !important;
+    filter: drop-shadow(0 0 20px #ff0077);
+}
+.decor-layer::before {
+    content:"";
+    position:absolute;
+    inset:0;
+    background:
+    linear-gradient(
+        to bottom,
+        transparent 40%,
+        rgba(0,0,0,.35)
+    );
+    pointer-events:none;
+}
+/* Arbres de la prairie */
+#decor-prairie .decor-obj {
+    color: #2e8b57 !important;
+    opacity: 0.85 !important;
+    filter: drop-shadow(0 5px 15px rgba(0,0,0,0.5));
+}
+
+#decor-prairie .decor-obj:nth-child(2) { top: 12vh; left: 5vw; font-size: clamp(3.5rem, 7vw, 5.5rem); }
+#decor-prairie .decor-obj:nth-child(3) { bottom: 15vh; left: 3vw; font-size: clamp(3rem, 6vw, 4.5rem); }
+#decor-prairie .decor-obj:nth-child(4) { top: 25vh; right: 5vw; font-size: clamp(4rem, 8vw, 6rem); }
+    </style>
+</head>
+
+<body>
+    <div class="landscape-selector">
+    <button class="landscape-btn" onclick="desert()">
+        🏜️ <span>Desert</span>
+    </button>
+
+    <button class="landscape-btn" onclick="city()">
+        🌆 <span>City</span>
+    </button>
+
+    <button class="landscape-btn" onclick="prairie()">
+        🌿 <span>Grassland</span>
+    </button>
+</div>
+<!-- Couches de Décors Dynamiques -->
+<div id="decor-desert" class="decor-layer">
+    <div class="dune dune-1"></div>
+    <div class="dune dune-2"></div>
+    <div class="lac lac-1"></div>
+    <i class="fa-solid fa-sun decor-obj" style="top: 5%; right: 10%; color: #ffe600; font-size: 5rem; opacity: 0.6;"></i>
+</div>
+
+<div id="decor-city" class="decor-layer">
+    <i class="fa-solid fa-building decor-obj" style="bottom: 10%; left: 3%; font-size: 8rem; opacity: 0.15;"></i>
+    <i class="fa-solid fa-city decor-obj" style="bottom: 12%; right: 2%; font-size: 9rem; opacity: 0.15;"></i>
+</div>
+
+<div id="decor-prairie" class="decor-layer">
+    <div class="lac lac-2"></div>
+    <i class="fa-solid fa-tree decor-obj" style="top: 15%; left: 10%; color: #1e4620; font-size: 5rem; opacity: 0.4;"></i>
+    <i class="fa-solid fa-tree decor-obj" style="bottom: 20%; left: 5%; color: #1e4620; font-size: 4rem; opacity: 0.4;"></i>
+    <i class="fa-solid fa-tree decor-obj" style="top: 30%; right: 8%; color: #1e4620; font-size: 6rem; opacity: 0.4;"></i>
+</div>
+
+
+
+    <div class="timer">
+        <p>3</p>
+    </div>
+
+    <div class="piste">
+        <i class="fa-solid fa-car" id="red_bar"></i>
+        <i class="fa-solid fa-car" id="blue_bar"></i>
+    </div>
+        
+    <div id="red">
+        <i class="fa-solid fa-hand-pointer"></i>
+        </div>
+    <div id="blue">
+        <i class="fa-solid fa-hand-pointer"></i>
+        </div>
+
+    <button id="exit" onclick="history.back()">
+        <i class="fa-solid fa-arrow-left"></i>
+    </button>
+
+    <div class="red_wins">
+        <p>
+            RED WINS
+            <br>
+            <i class="fa-solid fa-crown"></i>
+        </p>
+    </div>
+
+    <div class="blue_wins">
+        <p>
+            BLUE WINS
+            <br>
+            <i class="fa-solid fa-crown"></i>
+        </p>
+    </div>
+
+    <script>
+    function hideDecor() {
+    document.querySelectorAll(".decor-layer").forEach(el => {
+        el.style.opacity = "0";
+    });
+}
+    let body =document.querySelector("body")
+    function desert() {
+        hideDecor()
+    body.className = "body_desert";
+    document.getElementById("decor-desert").style.opacity = "1";
+    
+    
+    
+    document.querySelector(".landscape-selector").style.display="none"
+    document.querySelector(".piste").className = "piste piste_desert";
+
+    document.querySelector("#red_bar").className =
+        "fa-solid fa-car red_desert";
+
+    document.querySelector("#blue_bar").className =
+        "fa-solid fa-car blue_desert";
+
+    startTimer();
+}
+function city() {
+    hideDecor()
+    body.className = "body_ville";
+    document.querySelector(".landscape-selector").style.display="none"
+    document.getElementById("decor-city").style.opacity = "1";
+    document.querySelector(".piste").className = "piste piste_ville";
+
+    document.querySelector("#red_bar").className =
+        "fa-solid fa-car red_ville";
+
+    document.querySelector("#blue_bar").className =
+        "fa-solid fa-car blue_ville";
+
+    startTimer();
+}
+
+function prairie() {
+    hideDecor()
+    body.className = "body_prairie";
+    document.getElementById("decor-prairie").style.opacity = "1";
+
+    document.querySelector(".landscape-selector").style.display="none"
+    document.querySelector(".piste").className = "piste piste_prairie";
+
+    document.querySelector("#red_bar").className =
+        "fa-solid fa-car red_prairie";
+
+    document.querySelector("#blue_bar").className =
+        "fa-solid fa-car blue_prairie";
+
+    startTimer();
+}
+    let car = new Howl({
+          src: ['car.mp3'],
+          loop: true,
+          volume:1
+    
+        });
+    let blueWidth=0
+    let redWidth=0
+    let red_btn=document.getElementById("red")
+    let blue_btn=document.getElementById("blue")
+    
+        const soundTimer = new Howl({
+            src: ["timer.mp3"],
+            volume: 1
+        });
+
+        const timer = document.querySelector(".timer");
+        const text = document.querySelector(".timer p");
+
+        let count = 3;
+
+        function startTimer() {
+            const interval = setInterval(() => {
+                soundTimer.play();
+                text.textContent = count;
+                count--;
+
+                if (count < 0) {
+                    clearInterval(interval);
+
+                    text.textContent = "GO!";
+
+                    setTimeout(() => {
+                        timer.classList.add("go");
+                        soundTimer.mute(true);
+                car.play();
+                    }, 1500);
+                }
+
+            }, 1000);
+        }
+
+        
+    
+    red_btn.addEventListener("pointerdown",()=>{addWidth_red()})
+    blue_btn.addEventListener("pointerdown",()=>{addWidth_blue()})
+    function addWidth_red(){
+        if(redWidth<100){
+            redWidth++
+            document.querySelector("#red_bar").style.bottom=(2+redWidth)+"%"
+            if(redWidth===90){
+                
+                car.mute(true);
+                setTimeout(()=>{
+                    xWins();
+                },100)
+                
+            }
+        }
+    }
+    function addWidth_blue(){
+        if(blueWidth<100){
+            blueWidth++
+            document.querySelector("#blue_bar").style.bottom=(2+blueWidth)+"%"
+            if(blueWidth===90
+            ){
+                car.mute(true);
+                setTimeout(()=>{
+                    oWins();
+                },100)
+            }
+        }
+    }
+    </script>
+
+</body>
+
+</html>

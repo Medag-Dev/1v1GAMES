@@ -1,0 +1,1179 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/howler/2.2.4/howler.min.js"></script>
+  <script src="score.js" defer></script>
+  <title>memory</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Poppins:wght@600;800&display=swap');
+* {
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+}
+
+body {
+  width:100%;
+  height:100vh;
+  display:flex;
+  flex-direction:column;
+  overflow:hidden;
+  font-family:"Poppins", sans-serif;
+  user-select:none;
+  background: #FFD1DC;
+}
+#exit {
+            position: fixed;
+            top: 35px;
+            left: 0;
+            transform:translateY(-50%);
+            width: 55px;
+            height: 60px;
+            padding: 0;
+            border: none;
+            border-radius: 0 30px 30px 0;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-left: none;
+            color: #fff;
+            font-size: 22px;
+            cursor: pointer;
+            z-index: 10000;
+            transition: all 0.2s ease;
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+}
+
+        .timer {
+            position: fixed;
+            inset: 0;
+            z-index: 1000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: transparent;
+            backdrop-filter: blur(12px);
+        }
+
+        .timer p {
+            font-size: clamp(90px, 25vw, 200px);
+            color: #fff;
+            font-weight: 900;
+            font-family: 'Orbitron', sans-serif;
+            text-shadow:
+                0 0 20px rgba(255, 255, 255, 0.8),
+                0 0 50px rgba(0, 217, 255, 0.6),
+                0 0 100px rgba(255, 0, 85, 0.6);
+            animation: pulse 1s infinite cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(0.8); opacity: 0.5; }
+            50% { transform: scale(1.1); opacity: 1; }
+            100% { transform: scale(0.9); opacity: 0.8; }
+        }
+
+        .timer.go {
+            animation: hideTimer .6s ease-in forwards;
+        }
+
+        @keyframes hideTimer {
+            100% {
+                opacity: 0;
+                transform: scale(2);
+                visibility: hidden;
+            }
+        }
+
+
+        .blue_wins,
+        .red_wins,.draw {
+            position: fixed;
+            inset: 0;
+            z-index: 100000;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            font-size: clamp(35px, 8vw, 70px);
+            font-weight: 900;
+            color: white;
+            backdrop-filter: blur(15px);
+            text-align: center;
+            text-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            animation: winPop 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        @keyframes winPop {
+            from { transform: scale(0.8); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+
+        .blue_wins {
+            background: radial-gradient(circle, rgba(0, 102, 255, 0.95), rgba(5, 15, 40, 0.98));
+            box-shadow: inset 0 0 100px #00d9ff;
+        }
+        .draw{
+            background: transparent;
+        }
+        .red_wins {
+            background: radial-gradient(circle, rgba(255, 0, 81, 0.95), rgba(40, 5, 15, 0.98));
+            box-shadow: inset 0 0 100px #ff0055;
+        }
+
+        .blue_wins i, .red_wins i {
+            margin-top: 15px;
+            color: #ffd700;
+            filter: drop-shadow(0 0 15px rgba(255, 215, 0, 0.8));
+            animation: floatCrown 2s infinite ease-in-out;
+        }
+
+        @keyframes floatCrown {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-15px) rotate(5deg); }
+        }
+
+
+
+
+
+/* ECRANS VICTOIRE */
+.score-up{
+  animation: scorePop .3s;
+}
+
+@keyframes scorePop{
+  50%{
+    transform:translateY(-50%) scale(1.3);
+  }
+}
+
+.level-screen {
+
+position:fixed;
+inset:0;
+
+z-index:20000;
+
+display:flex;
+justify-content:center;
+align-items:center;
+flex-direction:column;
+
+background:linear-gradient(135deg,#667eea,#764ba2);
+
+color:white;
+
+text-align:center;
+
+padding:20px;
+
+}
+
+
+.level-screen h1 {
+
+font-size:clamp(40px,10vw,70px);
+
+font-weight:900;
+
+}
+
+
+.level-screen p {
+
+font-size:clamp(20px,5vw,30px);
+
+margin:20px;
+
+}
+
+
+.levels {
+
+display:flex;
+
+justify-content:center;
+
+align-items:center;
+
+flex-wrap:wrap;
+
+gap:20px;
+
+max-width:700px;
+
+}
+
+
+.level {
+
+width:180px;
+
+height:70px;
+
+border:none;
+
+border-radius:25px;
+
+font-size:25px;
+
+font-weight:900;
+
+cursor:pointer;
+
+transition:.3s;
+
+color:white;
+
+box-shadow:0 10px 25px rgba(0,0,0,.2);
+
+}
+
+
+.level:hover {
+
+transform:scale(1.1);
+
+}
+
+
+.easy {
+
+background:#4caf50;
+
+}
+
+
+.medium {
+
+background:#ff9800;
+
+}
+
+
+.hard {
+
+background:#f44336;
+
+}
+
+
+
+.score{
+    position:fixed;
+    top: 35px;
+    right: 0;
+    
+    transform:translateY(-50%) rotate(-90deg);
+
+    width: 60px;
+    height: 60px;
+    padding: 10px;
+    background:rgba(255,255,255,.75);
+    backdrop-filter:blur(10px);
+
+    border-radius:50px 50px 0 0;
+
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    gap:4px;
+
+    font-size:28px;
+    font-weight:900;
+
+    box-shadow:0 8px 20px rgba(0,0,0,.2);
+
+    z-index:10000;
+}
+
+.score span{
+    transform:rotate(0deg);
+}
+
+.blue-score{
+    color:#2196f3;
+    
+}
+
+.separator{
+    color:#555;
+}
+
+.red-score{
+    color:#f44336;
+    
+}
+.turn_red{
+  
+  position: fixed;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+
+  width: 60vw;
+  max-width: 260px;
+  height: 70px;
+
+  background:rgba(255,000,000,0.6);
+  color: white;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  opacity: 1;
+  border-radius: 999px 999px 0 0;
+  font-weight: bold;
+  transition: 0.9s all ease;
+}
+.turn_blue{
+  position: fixed;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%) rotate(180deg);
+
+  width: 60vw;
+  max-width: 260px;
+  height: 70px;
+  
+  background: rgba(000,000,255,0.6);
+  color: white;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  border-radius: 999px 999px 0 0;
+  font-weight: bold;
+  opacity: 0;
+  transition: 0.9s all ease;
+}
+
+
+/*jeu*/
+
+
+.board{
+    position:absolute;
+    top:100px;
+    bottom:100px;
+    left:20px;
+    right:20px;
+
+    display:none;
+
+    gap:12px;
+    padding:10px;
+
+    align-items:center;
+    justify-content:center;
+}
+
+
+/* GRILLES */
+
+#board-easy{
+    grid-template-columns:repeat(3, minmax(70px,110px));
+    grid-template-rows:repeat(4, minmax(70px,110px));
+}
+#board-medium{
+    grid-template-columns:repeat(3, minmax(70px,100px));
+    grid-template-rows:repeat(6, minmax(70px,100px));
+}
+#board-hard{
+    grid-template-columns:repeat(4, minmax(60px,90px));
+    grid-template-rows:repeat(6, minmax(60px,90px));
+}
+
+
+
+/* CARTE */
+
+.card{
+
+    width:100%;
+    height:100%;
+
+    min-width:45px;
+    min-height:45px;
+
+    cursor:pointer;
+
+    transform-style:preserve-3d;
+
+    transition:.5s;
+
+}
+
+
+
+/* face */
+
+.front,
+.back{
+
+    position:absolute;
+    inset:0;
+
+    display:flex;
+    justify-content:center;
+    align-items:center;
+
+    border-radius:20px;
+
+    backface-visibility:hidden;
+
+    font-size:clamp(20px,5vw,45px);
+
+}
+
+
+
+/* dos */
+
+.back{
+
+background:
+linear-gradient(135deg,#ffffff,#cbd5e1);
+
+
+box-shadow:
+
+inset 0 0 15px rgba(255,255,255,.8),
+0 8px 20px rgba(0,0,0,.25);
+
+
+color:#2563eb;
+
+font-size:35px;
+
+font-weight:900;
+
+}
+
+
+
+/* devant */
+
+.front{
+
+background:
+linear-gradient(135deg,#2563eb,#111827);
+
+
+transform:rotateY(180deg);
+
+
+box-shadow:
+
+inset 0 0 20px rgba(255,255,255,.3),
+0 8px 25px rgba(0,0,0,.4);
+
+
+color:white;
+
+}
+
+
+
+/* retournement */
+
+.card.flip{
+
+transform:
+rotateY(180deg)
+scale(1.08);
+
+}
+
+
+
+/* effet clic */
+
+.card:active{
+
+transform:
+rotateY(180deg)
+scale(.95);
+
+}
+
+.matched {
+  animation: matchAnimation 0.6s ease-in-out;
+}
+
+@keyframes matchAnimation {
+  0% {
+    transform: scale(1);
+  }
+
+  30% {
+    transform: scale(1.15) rotate(5deg);
+  }
+
+  60% {
+    transform: scale(1.15) rotate(-5deg);
+  }
+
+  100% {
+    transform: scale(1) rotate(0deg);
+  }
+}
+
+
+  </style>
+</head>
+
+<body>
+    
+<div class="game">
+     <div class="turn_red">
+        RED TURN
+      </div>
+      <div class="turn_blue">
+        BLUE TURN
+      </div>
+      <button id="exit" onclick="history.back()">
+<i class="fa-solid fa-arrow-left"></i>
+</button>
+<div class="score">
+    <span class="red-score" id="red_Score">0</span>
+    <span class="separator">:</span>
+    <span class="blue-score" id="blue_Score">0</span>
+</div>
+<div id="board-easy" class="board"></div>
+
+    <div id="board-medium" class="board"></div>
+
+    <div id="board-hard" class="board"></div>
+    </div>
+</div>
+   
+      
+      
+  <div class="level-screen">
+
+  <h1>Memory Game</h1>
+  <p>Choose your level</p>
+
+  <div class="levels">
+
+<button class="level easy">
+  Easy
+</button>
+
+<button class="level medium">
+  Medium
+</button>
+
+<button class="level hard">
+  Hard
+</button>
+
+  </div>
+
+</div>
+
+<div class="timer">
+<p>3</p>
+</div>
+<div class="red_wins">
+<p>
+RED WINS <i class="fa-solid fa-crown"></i>
+</p>
+</div>
+
+
+
+<div class="blue_wins">
+
+<p>
+BLUE WINS <i class="fa-solid fa-crown"></i>
+</p>
+
+</div>
+<div class="draw">
+
+<p>
+Draw 
+</p>
+
+</div>
+
+
+
+
+<script>
+const smooth_click = new Howl({
+          src: ['smooth_click.mp3'],
+          volume:1
+    });
+    
+    const click = new Howl({
+  src: ['click.mp3']
+  
+});
+let blocClic=false;
+let scoreBlue = 0;
+let scoreRed = 0;
+let niveau = "";
+const blue_Score = document.getElementById("blue_Score");
+const red_Score = document.getElementById("red_Score");
+let bonneReponse;
+const soundTimer = new Howl({
+src:["timer.mp3"],
+volume:1
+});
+
+
+const timer=document.querySelector(".timer");
+const text=document.querySelector(".timer p");
+
+
+const levelScreen=document.querySelector(".level-screen");
+
+let count=3;
+
+function startTimer(){
+
+const interval=setInterval(()=>{
+
+
+soundTimer.play();
+
+text.textContent=count;
+
+
+count--;
+
+
+if(count<0){
+
+clearInterval(interval);
+
+
+text.textContent="GO!";
+
+
+setTimeout(()=>{
+
+timer.classList.add("go");
+
+soundTimer.mute(true);
+
+
+},1500);
+
+
+}
+
+
+},1000);
+}
+//level
+document.querySelectorAll(".level").forEach(button=>{
+
+button.addEventListener("click",()=>{
+  
+    click.play();
+
+setTimeout(()=>{
+  if(button.classList.contains("easy")){
+  niveau = "easy";
+  easy();
+}
+if(button.classList.contains("medium")){
+  niveau = "medium";
+  medium();
+}
+if(button.classList.contains("hard")){
+  niveau = "hard";
+  hard();
+}
+
+
+},1000)
+
+
+
+levelScreen.style.display="none";
+
+
+startTimer();
+
+
+});
+
+
+});
+let tour="red"
+function changerTour(){
+
+    if(tour==="red"){
+        tour="blue";
+
+        document.querySelector(".turn_red").style.opacity="0";
+        document.querySelector(".turn_blue").style.opacity="1";
+        document.body.style.background="#ADD8E6"
+    }else{
+        tour="red";
+
+        document.querySelector(".turn_red").style.opacity="1";
+        document.querySelector(".turn_blue").style.opacity="0";
+        document.body.style.background="#FFD1DC"
+    }
+
+}
+function easy() {
+    let carteRetournés=[];
+    let paires = 6;
+    function verifierFin(){
+    if(paires === 0){
+
+        if(scoreRed > scoreBlue){
+            setTimeout(()=>{
+                xWins();
+            },1000);
+
+        }else if(scoreBlue > scoreRed){
+            setTimeout(()=>{
+                oWins();
+            },1000);
+
+        }else{
+            setTimeout(()=>{
+                draw();
+            },1000);
+        }
+
+    }
+}
+    const board = document.getElementById("board-easy");
+
+    board.style.display = "grid";
+    board.innerHTML = "";
+
+    const cartes = [
+"🍎","🍎",
+"🐶","🐶",
+"🚗","🚗",
+"⚽","⚽",
+"⭐","⭐",
+"🍕","🍕"
+];
+
+
+
+
+    cartes.sort(() => Math.random() - 0.5);
+
+    cartes.forEach(emoji => {
+
+        const carte = document.createElement("div");
+        carte.className = "card";
+
+        carte.innerHTML = `
+            <div class="back">?</div>
+            <div class="front">${emoji}</div>
+        `;
+
+        board.appendChild(carte);
+//jeu regle et gain
+carte.addEventListener("click",()=>{
+        smooth_click.play()
+if(blocClic===true)return;
+
+if(carte.classList.contains("flip")) return;
+if(tour==="red"){
+    
+    
+
+    carteRetournés.push(carte)
+    carte.classList.add("flip")
+    if(carteRetournés.length==2){
+    blocClic=true
+        if(carteRetournés[0].innerHTML==carteRetournés[1].innerHTML
+        ){
+            
+        carteRetournés[0].classList.add("matched");
+        carteRetournés[1].classList.add("matched");
+        carteRetournés[0].style.pointerEvents="none";
+carteRetournés[1].style.pointerEvents="none";
+            scoreRed++;
+            paires--;
+            verifierFin()
+      red_Score.textContent = scoreRed;
+      red_Score.classList.add("score-up");
+      setTimeout(()=>{
+        red_Score.classList.remove("score-up");
+        
+      },300);
+      red_Score.textContent = scoreRed;
+      carteRetournés=[];
+      blocClic=false
+        
+            
+        }else{
+            setTimeout(()=>{
+                carteRetournés[0].classList.remove("flip");
+            carteRetournés[1].classList.remove("flip");
+         changerTour(); 
+         carteRetournés=[];
+         blocClic=false
+            },1000)
+            
+        }
+    }
+    
+}else{
+    
+    carteRetournés.push(carte)
+    carte.classList.add("flip")
+    if(carteRetournés.length==2){
+        blocClic=true
+        if(carteRetournés[0].innerHTML==carteRetournés[1].innerHTML){
+        carteRetournés[0].classList.add("matched");
+        carteRetournés[1].classList.add("matched");
+        carteRetournés[0].style.pointerEvents="none";
+        carteRetournés[1].style.pointerEvents="none";
+            scoreBlue++;
+            paires--;
+            verifierFin()
+      blue_Score.textContent = scoreBlue;
+      blue_Score.classList.add("score-up");
+      setTimeout(()=>{
+        blue_Score.classList.remove("score-up");
+        
+      },300);
+      blue_Score.textContent = scoreBlue;
+      carteRetournés=[];
+      blocClic=false
+        }else{
+            setTimeout(()=>{
+                carteRetournés[0].classList.remove("flip");
+            carteRetournés[1].classList.remove("flip");
+         changerTour(); 
+         carteRetournés=[];
+         blocClic=false
+            },1000)
+        }
+    }
+    
+    
+}
+})
+
+    });
+}
+
+function medium() {
+    let carteRetournés=[];
+    let paires = 9;
+    function verifierFin(){
+    if(paires === 0){
+
+        if(scoreRed > scoreBlue){
+            setTimeout(()=>{
+                xWins();
+            },1000);
+
+        }else if(scoreBlue > scoreRed){
+            setTimeout(()=>{
+                oWins();
+            },1000);
+
+        }else{
+            setTimeout(()=>{
+                draw();
+            },1000);
+        }
+
+    }
+}
+    const board = document.getElementById("board-medium");
+
+    board.style.display = "grid";
+    board.innerHTML = "";
+
+    const cartes = [
+"🍎","🍎",
+"🐶","🐶",
+"🚗","🚗",
+"⚽","⚽",
+"⭐","⭐",
+"🍕","🍕",
+"🐱","🐱",
+"🍔","🍔",
+"🌈","🌈"
+];
+
+
+
+
+    cartes.sort(() => Math.random() - 0.5);
+
+    cartes.forEach(emoji => {
+
+        const carte = document.createElement("div");
+        carte.className = "card";
+
+        carte.innerHTML = `
+            <div class="back">?</div>
+            <div class="front">${emoji}</div>
+        `;
+
+        board.appendChild(carte);
+//jeu regle et gain
+carte.addEventListener("click",()=>{
+        smooth_click.play()
+if(blocClic===true)return;
+
+if(carte.classList.contains("flip")) return;
+if(tour==="red"){
+    
+    
+
+    carteRetournés.push(carte)
+    carte.classList.add("flip")
+    if(carteRetournés.length==2){
+    blocClic=true
+        if(carteRetournés[0].innerHTML==carteRetournés[1].innerHTML
+        ){
+        carteRetournés[0].classList.add("matched");
+        carteRetournés[1].classList.add("matched");
+        carteRetournés[0].style.pointerEvents="none";
+        carteRetournés[1].style.pointerEvents="none";
+            scoreRed++;
+            paires--;
+            verifierFin()
+      red_Score.textContent = scoreRed;
+      red_Score.classList.add("score-up");
+      setTimeout(()=>{
+        red_Score.classList.remove("score-up");
+        
+      },300);
+      red_Score.textContent = scoreRed;
+      carteRetournés=[];
+        blocClic=false
+            
+        }else{
+            setTimeout(()=>{
+                carteRetournés[0].classList.remove("flip");
+            carteRetournés[1].classList.remove("flip");
+         changerTour(); 
+         carteRetournés=[];
+         blocClic=false
+            },1000)
+         }
+    }
+    
+}else{
+    
+    carteRetournés.push(carte)
+    carte.classList.add("flip")
+    if(carteRetournés.length==2){
+        blocClic=true
+        if(carteRetournés[0].innerHTML==carteRetournés[1].innerHTML){
+        carteRetournés[0].classList.add("matched");
+        carteRetournés[1].classList.add("matched");
+        carteRetournés[0].style.pointerEvents="none";
+        carteRetournés[1].style.pointerEvents="none";
+            scoreBlue++;
+            paires--;
+            verifierFin()
+      blue_Score.textContent = scoreBlue;
+      blue_Score.classList.add("score-up");
+      setTimeout(()=>{
+        blue_Score.classList.remove("score-up");
+        
+      },300);
+      blue_Score.textContent = scoreBlue
+      carteRetournés=[];
+      blocClic=false
+        }else{
+            setTimeout(()=>{
+                carteRetournés[0].classList.remove("flip");
+            carteRetournés[1].classList.remove("flip");
+         changerTour(); 
+         carteRetournés=[];
+         blocClic=false
+            },1000)
+        }
+    }
+    
+    
+}
+})
+
+    });
+}
+function hard() {
+let carteRetournés=[];
+let paires = 12;
+function verifierFin(){
+    if(paires === 0){
+
+        if(scoreRed > scoreBlue){
+            setTimeout(()=>{
+                xWins();
+            },1000);
+
+        }else if(scoreBlue > scoreRed){
+            setTimeout(()=>{
+                oWins();
+            },1000);
+
+        }else{
+            setTimeout(()=>{
+                draw();
+            },1000);
+        }
+
+    }
+}
+    const board = document.getElementById("board-hard");
+
+    board.style.display = "grid";
+    board.innerHTML = "";
+
+    const cartes = [
+"🍎","🍎",
+"🐶","🐶",
+"🚗","🚗",
+"⚽","⚽",
+"⭐","⭐",
+"🍕","🍕",
+"🐱","🐱",
+"🍔","🍔",
+"🌈","🌈",
+"🦁","🦁",
+"🎮","🎮",
+"🚀","🚀"
+];
+
+
+
+    cartes.sort(() => Math.random() - 0.5);
+
+    cartes.forEach(emoji => {
+
+        const carte = document.createElement("div");
+        carte.className = "card";
+
+        carte.innerHTML = `
+            <div class="back">?</div>
+            <div class="front">${emoji}</div>
+        `;
+
+        board.appendChild(carte);
+        
+//jeu regle et gain
+carte.addEventListener("click",()=>{
+smooth_click.play()
+if(blocClic===true)return;
+
+if(carte.classList.contains("flip")) return;
+
+if(tour==="red"){
+    
+    
+
+        
+    carteRetournés.push(carte)
+    carte.classList.add("flip")
+    if(carteRetournés.length==2){
+    blocClic=true
+        if(carteRetournés[0].innerHTML==carteRetournés[1].innerHTML
+        ){
+        carteRetournés[0].classList.add("matched");
+        carteRetournés[1].classList.add("matched");
+            scoreRed++;
+            paires--;
+            verifierFin()
+      red_Score.textContent = scoreRed;
+      red_Score.classList.add("score-up");
+      carteRetournés[0].style.pointerEvents="none";
+      carteRetournés[1].style.pointerEvents="none";
+      setTimeout(()=>{
+        red_Score.classList.remove("score-up");
+        
+      },300);
+      red_Score.textContent = scoreRed
+      carteRetournés=[];
+      blocClic=false
+        }else{
+            setTimeout(()=>{
+                carteRetournés[0].classList.remove("flip");
+            carteRetournés[1].classList.remove("flip");
+         changerTour(); 
+         carteRetournés=[];
+         blocClic=false
+            },1000)
+            
+        }
+    }
+
+}else{
+    
+    carteRetournés.push(carte)
+    carte.classList.add("flip")
+    if(carteRetournés.length==2){
+        blocClic=true
+        if(carteRetournés[0].innerHTML==carteRetournés[1].innerHTML){
+        carteRetournés[0].classList.add("matched");
+        carteRetournés[1].classList.add("matched");
+        carteRetournés[0].style.pointerEvents="none";
+        carteRetournés[1].style.pointerEvents="none";
+            scoreBlue++;
+            paires--;
+            verifierFin()
+      blue_Score.textContent = scoreBlue;
+      blue_Score.classList.add("score-up");
+      setTimeout(()=>{
+        blue_Score.classList.remove("score-up");
+        
+      },300);
+      blue_Score.textContent = scoreBlue;
+      carteRetournés=[];
+      blocClic=false
+        }else{
+            setTimeout(()=>{
+            carteRetournés[0].classList.remove("flip");
+            carteRetournés[1].classList.remove("flip");
+         changerTour(); 
+         carteRetournés=[];
+         blocClic=false
+            },1000)
+        }
+    }
+
+    
+}
+});
+
+    });
+}
+
+
+
+
+
+
+
+function draw(){
+    const draw=document.querySelector(".draw")
+    draw.style.display="flex"
+    setTimeout(()=>{
+        location.reload();
+    },1500)
+}
+
+</script>
+</body>
+
+</html>

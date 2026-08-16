@@ -1,0 +1,690 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Connect 4</title>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/howler/2.2.4/howler.min.js"></script>
+    <script src="score.js" defer></script>
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Poppins:wght@600;800&display=swap');
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent;
+}
+
+
+html, body {
+    width: 100%;
+    height: 100%;
+    max-width: 100vw;
+    max-height: 100vh;
+    overflow: hidden !important; /* Bloque tout débordement de page */
+}
+
+body {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-family: 'Poppins', sans-serif;
+    background-color: #0b0c10;
+    transition: background 0.8s cubic-bezier(0.16, 1, 0.3, 1); 
+    user-select: none;
+    background: #FFD1DC;
+}
+.turn_red{
+  
+  position: fixed;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+
+  width: 60vw;
+  max-width: 260px;
+  height: 70px;
+
+  background:rgba(255,000,000,0.6);
+  color: white;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  opacity: 1;
+  border-radius: 999px 999px 0 0;
+  font-weight: bold;
+  transition: 0.9s all ease;
+}
+.turn_blue{
+  position: fixed;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%) rotate(180deg);
+
+  width: 60vw;
+  max-width: 260px;
+  height: 70px;
+  
+  background: rgba(000,000,255,0.6);
+  color: white;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  border-radius: 999px 999px 0 0;
+  font-weight: bold;
+  opacity: 0;
+  transition: 0.9s all ease;
+}
+/* --- BOUTON RETOUR --- */
+#exit {
+    position: fixed;
+    top: 5%;
+    left: 0;
+    width: 55px;
+    height: 60px;
+    padding: 0;
+    border: none;
+    border-radius: 0 30px 30px 0;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-left: none;
+    color: #fff;
+    font-size: 22px;
+    cursor: pointer;
+    z-index: 10000;
+    transition: all 0.2s ease;
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+}
+
+#exit:active {
+    transform: translateY(-50%) scale(0.95);
+    background: rgba(255, 255, 255, 0.25);
+}
+
+/* --- COMPTE À REBOURS --- */
+.timer {
+    position: fixed;
+    inset: 0;
+    z-index: 2000;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: rgba(5, 5, 8, 0.85);
+    backdrop-filter: blur(12px);
+}
+
+.timer p {
+    font-size: clamp(90px, 25vw, 200px);
+    color: #fff;
+    font-weight: 900;
+    font-family: 'Orbitron', sans-serif;
+    text-shadow:
+        0 0 20px rgba(255, 255, 255, 0.8),
+        0 0 50px rgba(0, 217, 255, 0.6),
+        0 0 100px rgba(255, 0, 85, 0.6);
+    animation: pulse 1s infinite cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+@keyframes pulse {
+    0% { transform: scale(0.8); opacity: 0.5; }
+    50% { transform: scale(1.1); opacity: 1; }
+    100% { transform: scale(0.9); opacity: 0.8; }
+}
+
+.timer.go {
+    animation: hideTimer .6s ease-in forwards;
+}
+
+@keyframes hideTimer {
+    100% {
+        opacity: 0;
+        transform: scale(2);
+        visibility: hidden;
+    }
+}
+
+/* --- ECRANS DE VICTOIRE --- */
+.blue_wins,
+.red_wins {
+    position: fixed;
+    inset: 0;
+    z-index: 100000;
+    display: none;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    font-size: clamp(35px, 8vw, 70px);
+    font-weight: 900;
+    color: white;
+    backdrop-filter: blur(15px);
+    text-align: center;
+    text-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    animation: winPop 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+@keyframes winPop {
+    from { transform: scale(0.8); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+}
+
+.blue_wins {
+    background: radial-gradient(circle, rgba(0, 102, 255, 0.95), rgba(5, 15, 40, 0.98));
+    box-shadow: inset 0 0 100px #00d9ff;
+}
+
+.red_wins {
+    background: radial-gradient(circle, rgba(255, 0, 81, 0.95), rgba(40, 5, 15, 0.98));
+    box-shadow: inset 0 0 100px #ff0055;
+}
+
+.blue_wins i, .red_wins i {
+    margin-top: 15px;
+    color: #ffd700;
+    filter: drop-shadow(0 0 15px rgba(255, 215, 0, 0.8));
+    animation: floatCrown 2s infinite ease-in-out;
+}
+
+@keyframes floatCrown {
+    0%, 100% { transform: translateY(0) rotate(0deg); }
+    50% { transform: translateY(-15px) rotate(5deg); }
+}
+/* ===========================
+   PLATEAU
+=========================== */
+
+      .board{
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: clamp(4px, 1vw, 8px);
+
+    width: min(95vw, 650px);
+    aspect-ratio: 7/6;
+
+    padding: clamp(6px, 1vw, 10px);
+
+    background: linear-gradient(135deg, #ffd700, #ffb300);
+    border-radius: clamp(18px,3vw,30px);
+
+    box-shadow:
+        0 20px 45px rgba(0,0,0,.35),
+        inset 0 3px 10px rgba(255,255,255,.25),
+        inset 0 -5px 15px rgba(0,0,0,.2);
+        box-sizing: border-box;
+}
+.column{
+    display:flex;
+    flex-direction:column-reverse;
+    justify-content:space-between;
+    align-items:center;
+    padding: clamp(3px,0.8vw,7px);
+    cursor:pointer;
+    height: 100%;
+}
+.column:hover{
+    background: rgba(255, 255, 255, 0.25);
+    border-radius: 20px;
+}
+
+.column p{
+    width:100%;
+    aspect-ratio:1;
+
+    border-radius:50%;
+
+    background:radial-gradient(circle at 35% 35%, #fff, #d9d9d9);
+
+    box-shadow:
+        inset 0 4px 8px rgba(255,255,255,.7),
+        inset 0 -5px 10px rgba(0,0,0,.15),
+        0 2px 5px rgba(0,0,0,.2);
+
+}
+@media (orientation: landscape){
+
+    .board{
+        height:90vh;
+        width:auto;
+    }
+
+    .turn_red,
+    .turn_blue{
+        height:55px;
+    }
+
+}
+@media (max-width:420px){
+
+    .board{
+        width:98vw;
+        padding:5px;
+        gap:4px;
+    }
+
+    .turn_red,
+    .turn_blue{
+        width:75vw;
+        height:60px;
+        font-size:14px;
+    }
+
+    #exit{
+        width:48px;
+        height:54px;
+        font-size:20px;
+    }
+
+}
+.red{
+background: radial-gradient(circle at 35% 35%, #ff8080, #ff0000) !important;
+}
+
+.blue{
+background: radial-gradient(circle at 35% 35%, #80c8ff, #0066ff) !important;
+}
+  .tie{
+  position: fixed;
+  inset: 0;
+  background: transparent;
+  backdrop-filter: blur(5px);
+  z-index: 10000;
+  backdrop-filter: blur(5px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 50px;
+  flex-direction: column;
+  color: white;
+  font-weight: 900;
+  font-family: "Poppins", sans-serif;
+
+  overflow: hidden;
+  display: none;
+} 
+.win{
+    animation:
+        flash 1s ease-in-out infinite,
+        float 1.5s ease-in-out infinite;
+}
+
+@keyframes flash{
+    0%,100%{
+        transform: scale(1);
+        box-shadow: 0 0 10px #fff;
+    }
+
+    50%{
+        transform: scale(1.12);
+        box-shadow:
+            0 0 20px #fff,
+            0 0 40px #ffd700,
+            0 0 80px #ffae00;
+    }
+}
+
+@keyframes float{
+    0%,100%{
+        translate: 0 0;
+    }
+
+    50%{
+        translate: 0 -6px;
+    }
+}
+    </style>
+</head>
+
+<body>
+    <div class="timer">
+        <p>3</p>
+    </div>
+         <div class="turn_red">
+        RED TURN
+      </div>
+      <div class="turn_blue">
+        BLUE TURN
+      </div>
+    <button id="exit" onclick="history.back()">
+        <i class="fa-solid fa-arrow-left"></i>
+    </button>
+
+    <div class="red_wins">
+        <p>
+            RED WINS
+            <br>
+            <i class="fa-solid fa-crown"></i>
+        </p>
+    </div>
+    <div class="tie">
+  <p>DRAW</p>
+</div>
+    <div class="blue_wins">
+        <p>
+            BLUE WINS
+            <br>
+            <i class="fa-solid fa-crown"></i>
+        </p>
+    </div>
+    
+    
+    
+    
+    
+    
+    
+    
+    <!--jeu-->
+    <div class="board">
+        <div class="column">
+            <p class="c1"></p>
+             <p class="c1"></p> 
+             <p class="c1"></p> 
+             <p class="c1"></p> 
+             <p class="c1"></p> 
+             <p class="c1"></p>
+        </div>
+        
+        <div class="column">
+            <p class="c2"></p>
+             <p class="c2"></p> 
+             <p class="c2"></p> 
+             <p class="c2"></p> 
+             <p class="c2"></p> 
+             <p class="c2"></p>  
+        </div>        
+        
+        <div class="column">
+             <p class="c3"></p>
+             <p class="c3"></p> 
+             <p class="c3"></p> 
+             <p class="c3"></p> 
+             <p class="c3"></p> 
+             <p class="c3"></p>  
+        </div>        
+        
+        <div class="column">
+             <p class="c4"></p>
+             <p class="c4"></p> 
+             <p class="c4"></p> 
+             <p class="c4"></p> 
+             <p class="c4"></p> 
+             <p class="c4"></p>  
+        </div>        
+        
+        <div class="column">
+             <p class="c5"></p>
+             <p class="c5"></p> 
+             <p class="c5"></p> 
+             <p class="c5"></p> 
+             <p class="c5"></p> 
+             <p class="c5"></p>  
+        </div>        
+        
+        <div class="column">
+             <p class="c6"></p>
+             <p class="c6"></p> 
+             <p class="c6"></p> 
+             <p class="c6"></p> 
+             <p class="c6"></p> 
+             <p class="c6"></p>  
+        </div>        
+        
+        <div class="column">
+             <p class="c7"></p>
+             <p class="c7"></p> 
+             <p class="c7"></p> 
+             <p class="c7"></p> 
+             <p class="c7"></p> 
+             <p class="c7"></p>  
+        </div>
+    </div>
+    
+    
+    
+<script>
+const smooth_click = new Howl({
+          src: ['smooth_click.mp3'],
+          volume:1
+    });
+const soundTimer = new Howl({
+            src: ["timer.mp3"],
+            volume: 1
+        });
+
+        const timer = document.querySelector(".timer");
+        const text = document.querySelector(".timer p");
+
+        let count = 3;
+
+        function startTimer() {
+            const interval = setInterval(() => {
+                soundTimer.play();
+                text.textContent = count;
+                count--;
+
+                if (count < 0) {
+                    clearInterval(interval);
+
+                    text.textContent = "GO!";
+
+                    setTimeout(() => {
+                        timer.classList.add("go");
+                        soundTimer.mute(true);
+                    }, 1500);
+                }
+
+            }, 1000);
+        }
+        startTimer();
+        
+let gameOver = false;        
+let tour = "red";
+function jouer(e) {
+     if (gameOver) return;
+
+    const colonne = e.currentTarget;
+    const cases = colonne.querySelectorAll("p");
+    smooth_click.stop();
+    smooth_click.play();
+for (let i = 0; i < 6; i++) {
+    if (
+        !cases[i].classList.contains("red") &&
+        !cases[i].classList.contains("blue")
+    ) {
+        
+        if (tour === "red") {
+            cases[i].classList.add("red");
+            tour = "blue";
+
+            document.body.style.background = "#ADD8E6";
+            document.querySelector(".turn_red").style.opacity = "0";
+            document.querySelector(".turn_blue").style.opacity = "1";
+            checkWin();
+        } else {
+            cases[i].classList.add("blue");
+            tour = "red";
+
+            document.body.style.background = "#FFD1DC";
+            document.querySelector(".turn_red").style.opacity = "1";
+            document.querySelector(".turn_blue").style.opacity = "0";
+            checkWin();
+        }
+
+        break; 
+    }
+    
+}
+}   
+
+const columns=document.querySelectorAll(".column")
+    columns.forEach((column)=>{
+        column.addEventListener("click",jouer)
+        
+    })
+//win
+const c1 = document.querySelectorAll(".c1");
+const c2 = document.querySelectorAll(".c2");
+const c3 = document.querySelectorAll(".c3");
+const c4 = document.querySelectorAll(".c4");
+const c5 = document.querySelectorAll(".c5");
+const c6 = document.querySelectorAll(".c6");
+const c7 = document.querySelectorAll(".c7");
+
+
+const wins = [
+
+/* HORIZONTALES (24) */
+
+[c1[0],c2[0],c3[0],c4[0]],
+[c2[0],c3[0],c4[0],c5[0]],
+[c3[0],c4[0],c5[0],c6[0]],
+[c4[0],c5[0],c6[0],c7[0]],
+
+[c1[1],c2[1],c3[1],c4[1]],
+[c2[1],c3[1],c4[1],c5[1]],
+[c3[1],c4[1],c5[1],c6[1]],
+[c4[1],c5[1],c6[1],c7[1]],
+
+[c1[2],c2[2],c3[2],c4[2]],
+[c2[2],c3[2],c4[2],c5[2]],
+[c3[2],c4[2],c5[2],c6[2]],
+[c4[2],c5[2],c6[2],c7[2]],
+
+[c1[3],c2[3],c3[3],c4[3]],
+[c2[3],c3[3],c4[3],c5[3]],
+[c3[3],c4[3],c5[3],c6[3]],
+[c4[3],c5[3],c6[3],c7[3]],
+
+[c1[4],c2[4],c3[4],c4[4]],
+[c2[4],c3[4],c4[4],c5[4]],
+[c3[4],c4[4],c5[4],c6[4]],
+[c4[4],c5[4],c6[4],c7[4]],
+
+[c1[5],c2[5],c3[5],c4[5]],
+[c2[5],c3[5],c4[5],c5[5]],
+[c3[5],c4[5],c5[5],c6[5]],
+[c4[5],c5[5],c6[5],c7[5]],
+
+
+/* VERTICALES (21) */
+
+[c1[0],c1[1],c1[2],c1[3]],
+[c1[1],c1[2],c1[3],c1[4]],
+[c1[2],c1[3],c1[4],c1[5]],
+
+[c2[0],c2[1],c2[2],c2[3]],
+[c2[1],c2[2],c2[3],c2[4]],
+[c2[2],c2[3],c2[4],c2[5]],
+
+[c3[0],c3[1],c3[2],c3[3]],
+[c3[1],c3[2],c3[3],c3[4]],
+[c3[2],c3[3],c3[4],c3[5]],
+
+[c4[0],c4[1],c4[2],c4[3]],
+[c4[1],c4[2],c4[3],c4[4]],
+[c4[2],c4[3],c4[4],c4[5]],
+
+[c5[0],c5[1],c5[2],c5[3]],
+[c5[1],c5[2],c5[3],c5[4]],
+[c5[2],c5[3],c5[4],c5[5]],
+
+[c6[0],c6[1],c6[2],c6[3]],
+[c6[1],c6[2],c6[3],c6[4]],
+[c6[2],c6[3],c6[4],c6[5]],
+
+[c7[0],c7[1],c7[2],c7[3]],
+[c7[1],c7[2],c7[3],c7[4]],
+[c7[2],c7[3],c7[4],c7[5]],
+
+
+/* DIAGONALES DESCENDANTES (12) */
+
+[c1[0],c2[1],c3[2],c4[3]],
+[c1[1],c2[2],c3[3],c4[4]],
+[c1[2],c2[3],c3[4],c4[5]],
+
+[c2[0],c3[1],c4[2],c5[3]],
+[c2[1],c3[2],c4[3],c5[4]],
+[c2[2],c3[3],c4[4],c5[5]],
+
+[c3[0],c4[1],c5[2],c6[3]],
+[c3[1],c4[2],c5[3],c6[4]],
+[c3[2],c4[3],c5[4],c6[5]],
+
+[c4[0],c5[1],c6[2],c7[3]],
+[c4[1],c5[2],c6[3],c7[4]],
+[c4[2],c5[3],c6[4],c7[5]],
+
+
+/* DIAGONALES MONTANTES (12) */
+
+[c1[3],c2[2],c3[1],c4[0]],
+[c1[4],c2[3],c3[2],c4[1]],
+[c1[5],c2[4],c3[3],c4[2]],
+
+[c2[3],c3[2],c4[1],c5[0]],
+[c2[4],c3[3],c4[2],c5[1]],
+[c2[5],c3[4],c4[3],c5[2]],
+
+[c3[3],c4[2],c5[1],c6[0]],
+[c3[4],c4[3],c5[2],c6[1]],
+[c3[5],c4[4],c5[3],c6[2]],
+
+[c4[3],c5[2],c6[1],c7[0]],
+[c4[4],c5[3],c6[2],c7[1]],
+[c4[5],c5[4],c6[3],c7[2]]
+
+];
+
+function checkWin(){
+    if (gameOver) return;
+    let winner = false;
+
+wins.forEach(combo => {
+    if (combo.every(cell => cell.classList.contains("red"))) {
+        winner = true;
+        combo.forEach(cell=>{
+            cell.classList.add("win")
+        })
+        setTimeout(xWins, 500);
+        gameOver = true;
+    }
+
+    if (combo.every(cell => cell.classList.contains("blue"))) {
+        winner = true;
+        combo.forEach(cell=>{
+            cell.classList.add("win")
+        })
+        setTimeout(oWins, 2500);
+        gameOver = true;
+    }
+});
+
+if (!winner && [...document.querySelectorAll(".board p")].every(cell =>
+    cell.classList.contains("red") || cell.classList.contains("blue")
+)) {
+    setTimeout(draw, 100);
+    gameOver = true;
+}
+}
+
+const tie = document.querySelector(".tie");
+
+function draw(){
+    tie.style.display = "flex"
+    setTimeout(()=>{location.reload()},1000)
+}
+</script>
+</body>
+
+</html>
+

@@ -1,0 +1,1049 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<link rel="stylesheet"
+href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.3.0/css/all.min.css">
+
+<title>Math Quiz</title>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/howler/2.2.4/howler.min.js"></script>
+<script src="score.js" defer></script>
+<style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Poppins:wght@600;800&display=swap');
+* {
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+}
+
+body {
+  width:100%;
+  height:100vh;
+  display:flex;
+  flex-direction:column;
+  overflow:hidden;
+  font-family:"Poppins", sans-serif;
+  user-select:none;
+}
+
+
+/* ZONES JOUEURS */
+
+.blue-container,
+.red-container {
+
+  width:100%;
+  height:50vh;
+
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  flex-direction:column;
+
+  overflow:hidden;
+}
+
+
+.blue-container {
+
+  background:#ADD8E6;
+  transform:rotate(180deg);
+
+}
+
+
+.red-container {
+
+  background:#FFB6C1;
+
+}
+
+
+
+/* CALCUL */
+
+.calcul-blue,
+.calcul-red {
+
+  width:min(220px,80%);
+  height:90px;
+
+  display:flex;
+  justify-content:center;
+  align-items:center;
+
+  background:rgba(255,255,255,.25);
+
+  backdrop-filter:blur(10px);
+
+  border-radius:25px;
+
+  color:white;
+
+  font-size:clamp(30px,6vw,45px);
+
+  font-weight:900;
+
+  margin-bottom:25px;
+
+  border:2px solid rgba(255,255,255,.4);
+
+  box-shadow:
+  0 10px 25px rgba(0,0,0,.15);
+
+}
+
+
+
+/* REPONSES */
+
+.blue-response-container,
+.red-response-container {
+
+  display:flex;
+  justify-content:center;
+  align-items:center;
+
+  flex-wrap:wrap;
+
+  gap:10px;
+
+  width:100%;
+
+}
+
+
+
+.response-blue,
+.response-red {
+
+  width:min(180px,25vw);
+
+  height:60px;
+
+  background:white;
+
+  border-radius:20px;
+
+  display:flex;
+
+  justify-content:center;
+  align-items:center;
+
+  font-size:clamp(20px,5vw,30px);
+
+  font-weight:800;
+
+  color:#555;
+
+  cursor:pointer;
+
+  transition:.3s;
+
+  box-shadow:
+  0 8px 20px rgba(0,0,0,.15);
+
+}
+
+
+.response-blue {
+
+ border-left:8px solid #2196f3;
+
+}
+
+
+.response-red {
+
+ border-left:8px solid #f44336;
+
+}
+
+
+.response-blue:hover,
+.response-red:hover {
+
+ transform:scale(1.08);
+
+}
+#exit {
+            position: fixed;
+            top: 50%;
+            left: 0;
+            transform: translateY(-50%);
+            width: 55px;
+            height: 60px;
+            padding: 0;
+            border: none;
+            border-radius: 0 30px 30px 0;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-left: none;
+            color: #fff;
+            font-size: 22px;
+            cursor: pointer;
+            z-index: 10000;
+            transition: all 0.2s ease;
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+        }
+
+        #exit:active {
+            transform: translateY(-50%) scale(0.95);
+            background: rgba(255, 255, 255, 0.25);
+        }
+
+        .timer {
+            position: fixed;
+            inset: 0;
+            z-index: 1000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: rgba(5, 5, 8, 0.85);
+            backdrop-filter: blur(12px);
+        }
+
+        .timer p {
+            font-size: clamp(90px, 25vw, 200px);
+            color: #fff;
+            font-weight: 900;
+            font-family: 'Orbitron', sans-serif;
+            text-shadow:
+                0 0 20px rgba(255, 255, 255, 0.8),
+                0 0 50px rgba(0, 217, 255, 0.6),
+                0 0 100px rgba(255, 0, 85, 0.6);
+            animation: pulse 1s infinite cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(0.8); opacity: 0.5; }
+            50% { transform: scale(1.1); opacity: 1; }
+            100% { transform: scale(0.9); opacity: 0.8; }
+        }
+
+        .timer.go {
+            animation: hideTimer .6s ease-in forwards;
+        }
+
+        @keyframes hideTimer {
+            100% {
+                opacity: 0;
+                transform: scale(2);
+                visibility: hidden;
+            }
+        }
+
+
+        .blue_wins,
+        .red_wins {
+            position: fixed;
+            inset: 0;
+            z-index: 100000;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            font-size: clamp(35px, 8vw, 70px);
+            font-weight: 900;
+            color: white;
+            backdrop-filter: blur(15px);
+            text-align: center;
+            text-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            animation: winPop 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        @keyframes winPop {
+            from { transform: scale(0.8); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+
+        .blue_wins {
+            background: radial-gradient(circle, rgba(0, 102, 255, 0.95), rgba(5, 15, 40, 0.98));
+            box-shadow: inset 0 0 100px #00d9ff;
+        }
+
+        .red_wins {
+            background: radial-gradient(circle, rgba(255, 0, 81, 0.95), rgba(40, 5, 15, 0.98));
+            box-shadow: inset 0 0 100px #ff0055;
+        }
+
+        .blue_wins i, .red_wins i {
+            margin-top: 15px;
+            color: #ffd700;
+            filter: drop-shadow(0 0 15px rgba(255, 215, 0, 0.8));
+            animation: floatCrown 2s infinite ease-in-out;
+        }
+
+        @keyframes floatCrown {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-15px) rotate(5deg); }
+        }
+
+
+
+
+
+/* ECRANS VICTOIRE */
+.score-up{
+  animation: scorePop .3s;
+}
+
+@keyframes scorePop{
+  50%{
+    transform:translateY(-50%) scale(1.3);
+  }
+}
+
+/* MOBILE */
+
+@media(max-width:600px){
+.level {
+
+width:140px;
+
+height:60px;
+
+font-size:20px;
+}
+.response-blue,
+.response-red {
+
+ width:100px;
+ height:50px;
+
+}
+
+
+.blue-response-container,
+.red-response-container {
+
+ gap:5px;
+
+}
+
+}
+
+.level-screen {
+
+position:fixed;
+inset:0;
+
+z-index:20000;
+
+display:flex;
+justify-content:center;
+align-items:center;
+flex-direction:column;
+
+background:linear-gradient(135deg,#667eea,#764ba2);
+
+color:white;
+
+text-align:center;
+
+padding:20px;
+
+}
+
+
+.level-screen h1 {
+
+font-size:clamp(40px,10vw,70px);
+
+font-weight:900;
+
+}
+
+
+.level-screen p {
+
+font-size:clamp(20px,5vw,30px);
+
+margin:20px;
+
+}
+
+
+.levels {
+
+display:flex;
+
+justify-content:center;
+
+align-items:center;
+
+flex-wrap:wrap;
+
+gap:20px;
+
+max-width:700px;
+
+}
+
+
+.level {
+
+width:180px;
+
+height:70px;
+
+border:none;
+
+border-radius:25px;
+
+font-size:25px;
+
+font-weight:900;
+
+cursor:pointer;
+
+transition:.3s;
+
+color:white;
+
+box-shadow:0 10px 25px rgba(0,0,0,.2);
+
+}
+
+
+.level:hover {
+
+transform:scale(1.1);
+
+}
+
+
+.easy {
+
+background:#4caf50;
+
+}
+
+
+.medium {
+
+background:#2196f3;
+
+}
+
+
+.hard {
+
+background:#ff9800;
+
+}
+
+
+.expert {
+
+background:#f44336;
+
+}
+.score{
+    position:fixed;
+    top:50%;
+    right: 0;
+    
+    transform:translateY(-50%) rotate(-90deg);
+
+    width: 60px;
+    height: 60px;
+    padding: 10px;
+    background:rgba(255,255,255,.75);
+    backdrop-filter:blur(10px);
+
+    border-radius:50px 50px 0 0;
+
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    gap:4px;
+
+    font-size:28px;
+    font-weight:900;
+
+    box-shadow:0 8px 20px rgba(0,0,0,.2);
+
+    z-index:10000;
+}
+
+.score span{
+    transform:rotate(0deg);
+}
+
+.blue-score{
+    color:#2196f3;
+    
+}
+
+.separator{
+    color:#555;
+}
+
+.red-score{
+    color:#f44336;
+    
+}
+
+</style>
+
+</head>
+
+
+<body>
+<div class="level-screen">
+
+  <h1>Math Quiz</h1>
+  <p>Choose your level</p>
+
+  <div class="levels">
+
+<button class="level easy">
+  Easy
+</button>
+
+<button class="level medium">
+  Medium
+</button>
+
+<button class="level hard">
+  Hard
+</button>
+
+<button class="level expert">
+  Expert
+</button>
+
+  </div>
+
+</div>
+
+<div class="timer">
+<p>3</p>
+</div>
+
+
+
+<div class="blue-container">
+
+<div class="calcul-blue"></div>
+
+
+<div class="blue-response-container">
+
+<div class="response-blue" id="rb1"></div>
+<div class="response-blue" id="rb2"></div>
+<div class="response-blue" id="rb3"></div>
+
+</div>
+
+
+</div>
+
+
+
+
+<div class="red-container">
+
+<div class="calcul-red"></div>
+
+
+<div class="red-response-container">
+
+<div class="response-red" id="rr1"></div>
+<div class="response-red" id="rr2"></div>
+<div class="response-red" id="rr3"></div>
+
+</div>
+
+</div>
+
+
+
+
+<div class="red_wins">
+<p>
+RED WINS <i class="fa-solid fa-crown"></i>
+</p>
+</div>
+
+
+
+<div class="blue_wins">
+
+<p>
+BLUE WINS <i class="fa-solid fa-crown"></i>
+</p>
+
+</div>
+
+
+
+<button id="exit" onclick="history.back()">
+<i class="fa-solid fa-arrow-left"></i>
+</button>
+<div class="score">
+    <span class="red-score" id="red_Score">0</span>
+    <span class="separator">:</span>
+    <span class="blue-score" id="blue_Score">0</span>
+</div>
+
+
+<script>
+
+
+function feedback(btn, bonne){
+  if(bonne){
+    btn.style.background = "#4CAF50";
+  }else{
+    btn.style.background = "#DC3545";
+  }
+
+  setTimeout(()=>{
+    btn.style.background = "white";
+  },300);
+}
+
+
+const click = new Howl({
+  src: ['click.mp3']
+  });
+let scoreBlue = 0;
+let scoreRed = 0;
+let niveau = "";
+const blue_Score = document.getElementById("blue_Score");
+const red_Score = document.getElementById("red_Score");
+let bonneReponse;
+const soundTimer = new Howl({
+src:["timer.mp3"],
+volume:1
+});
+
+
+const timer=document.querySelector(".timer");
+const text=document.querySelector(".timer p");
+
+
+const levelScreen=document.querySelector(".level-screen");
+
+let count=3;
+
+function startTimer(){
+
+const interval=setInterval(()=>{
+
+
+soundTimer.play();
+
+text.textContent=count;
+
+
+count--;
+
+
+if(count<0){
+
+clearInterval(interval);
+
+
+text.textContent="GO!";
+
+
+setTimeout(()=>{
+
+timer.classList.add("go");
+
+soundTimer.mute(true);
+
+
+},1500);
+
+
+}
+
+
+},1000);
+}
+//level
+document.querySelectorAll(".level").forEach(button=>{
+
+button.addEventListener("click",()=>{
+  
+    click.play();
+
+setTimeout(()=>{
+  if(button.classList.contains("easy")){
+  niveau = "easy";
+  createCalculFacile();
+}
+if(button.classList.contains("medium")){
+  niveau = "medium";
+  createCalculMoyen()
+}
+if(button.classList.contains("hard")){
+  niveau = "hard";
+  createCalculDifficile()
+}
+if(button.classList.contains("expert")){
+  niveau = "expert";
+  createCalculExpert()
+}
+
+},1000)
+
+
+
+levelScreen.style.display="none";
+
+
+startTimer();
+
+
+});
+
+
+});
+
+
+
+
+//calculs
+const calcul_red=document.querySelector(".calcul-red")
+const calcul_blue=document.querySelector(".calcul-blue")
+const respo_red_1=document.getElementById("rr1")
+const respo_red_2=document.getElementById("rr2")
+const respo_red_3=document.getElementById("rr3")
+const respo_blue_1=document.getElementById("rb1")
+const respo_blue_2=document.getElementById("rb2")
+const respo_blue_3=document.getElementById("rb3")
+
+function createCalculFacile(){
+  
+  let a = Math.floor(Math.random() * 10);
+  let b = Math.floor(Math.random() * 20);
+  let c = Math.floor(Math.random() * 30);
+  let calcul_facile = c-b+a;
+  let texte_facile = `${c}-${b}+${a}=`;
+   bonneReponse=calcul_facile
+
+  let false_response1=calcul_facile-8+Math.floor(Math.random()*5)
+  let false_response2=calcul_facile+15+Math.floor(Math.random()*10)
+  calcul_red.textContent=texte_facile
+  calcul_blue.textContent=texte_facile
+  let position = Math.floor(Math.random() * 3);
+
+if(position === 0){
+    respo_red_1.textContent = calcul_facile;
+    respo_red_2.textContent = false_response1;
+    respo_red_3.textContent = false_response2;
+
+    respo_blue_1.textContent = calcul_facile;
+    respo_blue_2.textContent = false_response1;
+    respo_blue_3.textContent = false_response2;
+}
+
+if(position === 1){
+    respo_red_1.textContent = false_response1;
+    respo_red_2.textContent = calcul_facile;
+    respo_red_3.textContent = false_response2;
+
+    respo_blue_1.textContent = false_response1;
+    respo_blue_2.textContent = calcul_facile;
+    respo_blue_3.textContent = false_response2;
+}
+
+if(position === 2){
+    respo_red_1.textContent = false_response1;
+    respo_red_2.textContent = false_response2;
+    respo_red_3.textContent = calcul_facile;
+
+    respo_blue_1.textContent = false_response1;
+    respo_blue_2.textContent = false_response2;
+    respo_blue_3.textContent = calcul_facile;
+}
+}
+function createCalculMoyen(){
+  
+  let d= Math.floor(Math.random() * 10);
+  let e= Math.floor(Math.random() * 10);
+  let f= Math.floor(Math.random() * 30);
+  let calcul_moyen = d*e+f;
+   bonneReponse=calcul_moyen
+
+  let texte_moyen = `${d}×${e}+${f}=`;
+  calcul_red.textContent=texte_moyen
+  calcul_blue.textContent=texte_moyen
+  let false_response1=calcul_moyen-8+Math.floor(Math.random()*5)
+  let false_response2=calcul_moyen+15+Math.floor(Math.random()*10)
+  let position = Math.floor(Math.random() * 3);
+
+if(position === 0){
+
+  // Bonne réponse en 1
+  respo_red_1.textContent = calcul_moyen;
+  respo_red_2.textContent = false_response1;
+  respo_red_3.textContent = false_response2;
+
+  respo_blue_1.textContent = calcul_moyen;
+  respo_blue_2.textContent = false_response1;
+  respo_blue_3.textContent = false_response2;
+
+}
+
+if(position === 1){
+
+  // Bonne réponse en 2
+  respo_red_1.textContent = false_response1;
+  respo_red_2.textContent = calcul_moyen;
+  respo_red_3.textContent = false_response2;
+
+  respo_blue_1.textContent = false_response1;
+  respo_blue_2.textContent = calcul_moyen;
+  respo_blue_3.textContent = false_response2;
+
+}
+
+if(position === 2){
+
+  // Bonne réponse en 3
+  respo_red_1.textContent = false_response1;
+  respo_red_2.textContent = false_response2;
+  respo_red_3.textContent = calcul_moyen;
+
+  respo_blue_1.textContent = false_response1;
+  respo_blue_2.textContent = false_response2;
+  respo_blue_3.textContent = calcul_moyen;
+
+}
+}
+
+function createCalculDifficile(){
+
+  let d= Math.floor(Math.random() * 9)+1;
+  let e= Math.floor(Math.random() * 10);
+  let f= Math.floor(Math.random() * 20);
+  let g=Math.floor(Math.random() * 9);
+  let calcul_difficile = Math.pow(d,2)+e*d-f+g
+  
+  let texte_difficile= `${d}²+${e}×${d}-${f}+${g}=`;
+   bonneReponse=calcul_difficile
+calcul_red.textContent=texte_difficile
+  calcul_blue.textContent=texte_difficile
+  let false_response1=calcul_difficile-8+Math.floor(Math.random()*5)
+  let false_response2=calcul_difficile+15+Math.floor(Math.random()*10)
+  let position = Math.floor(Math.random() * 3);
+  if(position === 0){
+
+  respo_red_1.textContent = calcul_difficile;
+  respo_red_2.textContent = false_response1;
+  respo_red_3.textContent = false_response2;
+
+  respo_blue_1.textContent = false_response2;
+  respo_blue_2.textContent = false_response1;
+  respo_blue_3.textContent = calcul_difficile;
+
+}
+
+
+if(position === 1){
+
+  respo_red_1.textContent = calcul_difficile;
+  respo_red_2.textContent = false_response1;
+  respo_red_3.textContent = false_response2;
+
+  respo_blue_1.textContent = false_response1;
+  respo_blue_2.textContent = false_response2;
+  respo_blue_3.textContent =  calcul_difficile;
+}
+
+
+if(position === 2){
+
+  respo_red_1.textContent = false_response2;
+  respo_red_2.textContent =
+  calcul_difficile;
+  respo_red_3.textContent = 
+  false_response1;
+  respo_blue_1.textContent = false_response2;
+  respo_blue_2.textContent = false_response1;
+  respo_blue_3.textContent = calcul_difficile;
+
+}
+}
+function createCalculExpert(){
+  let a = [25,36,49,64,81,100,121,144][Math.floor(Math.random()*8)];
+  let b = Math.floor(Math.random()*21)-10;
+  let c = Math.floor(Math.random()*5)+2;
+  let n = Math.floor(Math.random()*3)+3;
+
+  let somme = 0;
+
+  for(let i = 1; i <= n; i++){
+    somme += i;
+  }
+
+  let calcul_expert =
+  Math.sqrt(a) +
+  Math.abs(b) +
+  (c ** 2) -
+  somme;
+
+  let texte_expert =
+  `√${a}+|${b}|+${c}²-Σ(i=1→${n})i=`;
+
+  bonneReponse = calcul_expert;
+
+  calcul_red.textContent = texte_expert;
+  calcul_blue.textContent = texte_expert;
+
+  let false_response1 =
+  calcul_expert + Math.floor(Math.random()*8)+2;
+
+  let false_response2 =
+  calcul_expert - Math.floor(Math.random()*8)-2;
+
+  let position = Math.floor(Math.random()*3);
+
+  if(position === 0){
+
+    respo_red_1.textContent = calcul_expert;
+    respo_red_2.textContent = false_response1;
+    respo_red_3.textContent = false_response2;
+
+    respo_blue_1.textContent = calcul_expert;
+    respo_blue_2.textContent = false_response1;
+    respo_blue_3.textContent = false_response2;
+
+  }
+
+  if(position === 1){
+
+    respo_red_1.textContent = false_response1;
+    respo_red_2.textContent = calcul_expert;
+    respo_red_3.textContent = false_response2;
+
+    respo_blue_1.textContent = false_response1;
+    respo_blue_2.textContent = calcul_expert;
+    respo_blue_3.textContent = false_response2;
+
+  }
+
+  if(position === 2){
+
+    respo_red_1.textContent = false_response2;
+    respo_red_2.textContent = false_response1;
+    respo_red_3.textContent = calcul_expert;
+
+    respo_blue_1.textContent = false_response2;
+    respo_blue_2.textContent = false_response1;
+    respo_blue_3.textContent = calcul_expert;
+
+  }
+
+}
+//win
+const goodSound = new Howl({
+ src:["correct.mp3"]
+});
+
+const badSound = new Howl({
+ src:["wrong.mp3"]
+});
+function restartFunction(){
+      if(niveau==="easy"){createCalculFacile()}
+      if(niveau==="hard"){createCalculDifficile()}
+      if(niveau==="medium"){createCalculMoyen()}
+      if(niveau==="expert"){createCalculExpert()}
+      }
+
+//bleu
+document.querySelectorAll(".response-blue").forEach(btn => {
+
+  btn.addEventListener("click", () => {
+
+    if (Number(btn.textContent) === bonneReponse) {
+      restartFunction();
+      feedback(btn,true);
+
+      scoreBlue++;
+      goodSound.play();
+      blue_Score.classList.add("score-up");
+      setTimeout(()=>{
+        blue_Score.classList.remove("score-up");
+        },300);
+        
+      blue_Score.textContent = scoreBlue;
+      if(scoreBlue==5){
+        oWins()
+      }
+    }else{
+  scoreRed++;
+  red_Score.textContent = scoreRed;
+  red_Score.classList.add("score-up");
+badSound.play();
+setTimeout(()=>{
+ red_Score.classList.remove("score-up");
+},300);
+  feedback(btn,false);
+  if(scoreRed==5){
+    xWins();
+  }
+
+  restartFunction();
+}
+
+  });
+
+});
+
+//rouge
+document.querySelectorAll(".response-red").forEach(btn => {
+
+  btn.addEventListener("click", () => {
+
+    if (Number(btn.textContent) === bonneReponse) {
+      feedback(btn,true);
+goodSound.play();
+      scoreRed++;
+      red_Score.textContent = scoreRed;
+      red_Score.classList.add("score-up");
+      setTimeout(()=>{
+        red_Score.classList.remove("score-up");
+        
+      },300);
+      red_Score.textContent = scoreRed;
+      restartFunction();
+
+      
+      
+      if(scoreRed==5){
+        xWins()
+      }
+    }else{
+      feedback(btn,false);
+        scoreBlue++;
+        blue_Score.classList.add("score-up");
+      setTimeout(()=>{
+        blue_Score.classList.remove("score-up");
+        badSound.play();
+      },300);
+      blue_Score.textContent = scoreBlue;
+      if(scoreBlue==5){
+    oWins();
+  }
+      restartFunction();
+      }
+
+  });
+
+});
+</script>
+
+
+</body>
+</html>

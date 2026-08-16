@@ -1,0 +1,1796 @@
+
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/howler/2.2.4/howler.min.js"></script>
+<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hammer.js/2.0.8/hammer.min.js" integrity="sha512-UXumZrZNiOwnTcZSHLOfcTs0aos2MzBWHXOHOuB0J/R44QB0dwY5JgfbvljXcklVf65Gc4El6RjZ+lnwd2az2g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>  
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+  <title> SHINOBI RUNNER </title>
+
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Plus+Jakarta+Sans:wght@600;800&family=Shojumaru&display=swap');
+
+:root {
+  /* palette*/
+  --chakra-glow: rgba(0, 229, 255, 0.75);
+  --glass-bg: rgba(10, 20, 32, 0.85);
+  --glass-border: rgba(128, 222, 234, 0.6);
+
+  /* Thème Hivernal Par Défaut : Neige, Glace & Ailes de Frimas */
+  --sky-gradient: radial-gradient(circle at 50% 20%, #1e3a5f 0%, #0d1b2a 45%, #050b14 80%, #020509 100%);
+  --ground-gradient: linear-gradient(180deg, #ffffff 0%, #e0f7fa 25%, #80deea 60%, #006064 100%);
+  --ground-border: #b2ebf2;
+
+  /* Montagnes Enneigées & Végétation d'Hiver */
+  --m-back-color: #0d2137;
+  --m-mid-color: #16324f;
+  --m-front-color: #22436c;
+  --tree-foliage: #ffffff;
+  --tree-trunk: #1c2833;
+  --grass-blade: #e0f7fa;
+  --ice-cap: linear-gradient(180deg, #ffffff 0%, rgba(224, 247, 250, 0.95) 65%, rgba(128, 222, 234, 0.5) 100%);
+
+  --sun-bg: radial-gradient(circle, #ffffff 20%, #e0f7fa 45%, #80deea 70%, #00b0ff 95%);
+  --sun-shadow: 0 0 50px rgba(128, 222, 234, 0.8), 0 0 100px rgba(0, 176, 255, 0.5), inset 0 0 20px rgba(255, 255, 255, 0.9);
+  --waterfall-color: linear-gradient(180deg, rgba(255,255,255,0.98) 0%, rgba(179, 229, 252, 0.9) 40%, rgba(0, 229, 255, 0.95) 70%, rgba(2, 119, 189, 0.98) 100%);
+}
+
+/* ================= HIVER ================= */
+
+body.season-winter {
+  --sky-gradient: radial-gradient(circle at 50% 20%, #1e3a5f 0%, #0d1b2a 50%, #020509 100%);
+  --ground-gradient: linear-gradient(180deg,#fff,#e0f7fa,#80deea);
+  --ground-border:#b2ebf2;
+
+  --m-back-color:#0d2137;
+  --m-mid-color:#16324f;
+  --m-front-color:#22436c;
+
+  --tree-foliage:#ffffff;
+  --tree-trunk:#263238;
+
+  --sun-bg:radial-gradient(circle,#fff,#b2ebf2,#00b0ff);
+}
+
+
+/* ================= PRINTEMPS ================= */
+
+body.season-spring {
+  --sky-gradient:linear-gradient(#8ed6ff,#d8f3dc);
+
+  --ground-gradient:linear-gradient(180deg,#a8e063,#56ab2f);
+  --ground-border:#4caf50;
+
+  --m-back-color:#607d8b;
+  --m-mid-color:#78909c;
+  --m-front-color:#90a4ae;
+
+  --tree-foliage:#4caf50;
+  --tree-trunk:#5d4037;
+
+  --sun-bg:radial-gradient(circle,#fff176,#ffeb3b,#ff9800);
+}
+
+
+/* ================= ETE ================= */
+
+body.season-summer {
+  --sky-gradient:linear-gradient(#2196f3,#81d4fa);
+
+  --ground-gradient:linear-gradient(180deg,#7cb342,#33691e);
+  --ground-border:#558b2f;
+
+  --m-back-color:#455a64;
+  --m-mid-color:#546e7a;
+  --m-front-color:#607d8b;
+
+  --tree-foliage:#2e7d32;
+  --tree-trunk:#4e342e;
+
+  --sun-bg:radial-gradient(circle,#fff59d,#ffca28,#ff6f00);
+}
+
+
+/* ================= AUTOMNE ================= */
+
+body.season-autumn {
+  --sky-gradient:linear-gradient(#ffcc80,#ef6c00);
+
+  --ground-gradient:linear-gradient(180deg,#d4a017,#6d4c41);
+  --ground-border:#8d6e63;
+
+  --m-back-color:#5d4037;
+  --m-mid-color:#795548;
+  --m-front-color:#8d6e63;
+
+  --tree-foliage:#ff9800;
+  --tree-trunk:#3e2723;
+
+  --sun-bg:radial-gradient(circle,#fff8e1,#ffb300,#e65100);
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+}
+
+body {
+  width: 100vw;
+  height: 100vh;
+  height: 100dvh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+  font-family: "Plus Jakarta Sans", sans-serif;
+  user-select: none;
+  background: #020509;
+}
+
+body, .ground, .sun, .mountain, .tree, .blade {
+  animation-play-state: paused !important;
+}
+
+body.started {
+  animation: cycleSaisons 48s infinite linear !important;
+}
+
+body.started .ground {
+  animation: cycleSol 48s infinite linear !important;
+}
+
+body.started .mountains-container {
+  animation: moveMountains 10s linear infinite !important;
+}
+
+body.started .sun {
+  animation: cycleSoleil 48s infinite linear !important;
+}
+
+body.started .tree-foliage, body.started .blade {
+  animation-play-state: running !important;
+}
+
+/* ================= MONTAGNES================= */
+
+.mountains-container {
+  position: absolute;
+  bottom: 36px;
+  left: 0;
+  width: 200%;
+  height: 380px;
+  display: flex;
+  z-index: 2;
+  pointer-events: none;
+}
+
+.mountain-group {
+  position: relative;
+  width: 50%;
+  height: 100%;
+  display: flex;
+  align-items: flex-end;
+}
+
+.mountain {
+  position: absolute;
+  bottom: 0;
+  transition: background 1.5s ease-in-out;
+  filter: drop-shadow(0px 12px 24px rgba(0, 10, 25, 0.85));
+}
+
+/* Texture */
+.mountain::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: 
+    linear-gradient(105deg, rgba(255,255,255,0.35) 0%, rgba(255,255,255,0.08) 48%, rgba(5,15,30,0.55) 50%, rgba(2,8,18,0.85) 100%),
+    repeating-linear-gradient(45deg, rgba(255,255,255,0.08) 0px, rgba(255,255,255,0.08) 2px, transparent 2px, transparent 5px);
+  clip-path: inherit;
+}
+
+/* Calotte Enneigée Immense & Cristalline */
+.mountain::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 55%;
+  background: var(--ice-cap);
+  transition: background 1.5s ease-in-out;
+  clip-path: inherit;
+  filter: drop-shadow(0 6px 15px rgba(220, 245, 255, 0.9));
+}
+
+.m1 {
+  left: -2%;
+  width: 520px;
+  height: 320px;
+  background: var(--m-back-color);
+  opacity: 0.95;
+  clip-path: polygon(50% 0%, 100% 100%, 0% 100%);
+  z-index: 1;
+}
+
+.m2 {
+  left: 28%;
+  width: 620px;
+  height: 380px;
+  background: var(--m-mid-color);
+  clip-path: polygon(42% 0%, 100% 100%, 0% 100%);
+  z-index: 2;
+}
+
+.m3 {
+  left: 65%;
+  width: 480px;
+  height: 260px;
+  background: var(--m-front-color);
+  clip-path: polygon(58% 0%, 100% 100%, 0% 100%);
+  z-index: 3;
+}
+
+/* Chute */
+.waterfall {
+  position: absolute;
+  bottom: 3px;
+  left: 65%;
+  width: 25px;
+  height: 80px;
+  background: var(--waterfall-color);
+  z-index: 5;
+  border-radius: 4px;
+  box-shadow: 0 0 25px rgba(0, 229, 255, 0.9), 0 0 50px rgba(128, 222, 234, 0.6);
+  overflow: hidden;
+}
+
+.waterfall::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    0deg,
+    rgba(255, 255, 255, 0) 0px,
+    rgba(255, 255, 255, 0.98) 8px,
+    rgba(128, 222, 234, 0.8) 16px,
+    rgba(255, 255, 255, 0) 24px
+  );
+  animation: flowWater 0.4s linear infinite;
+}
+
+.waterfall::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: -12px;
+  width: 36px;
+  height: 16px;
+  background: radial-gradient(circle, rgba(255,255,255,1) 0%, rgba(128,222,234,0.9) 50%, transparent 100%);
+  border-radius: 50%;
+  filter: blur(1px);
+  animation: mistPulse 0.4s infinite alternate;
+}
+
+@keyframes flowWater {
+  0% { transform: translateY(-24px); }
+  100% { transform: translateY(0); }
+}
+
+@keyframes mistPulse {
+  0% { transform: scale(0.8); opacity: 0.7; filter: blur(1px); }
+  100% { transform: scale(1.4); opacity: 1; filter: blur(3px); }
+}
+
+@keyframes moveMountains {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+/* ARBRES*/
+.tree{
+ position:absolute;
+ bottom:0;
+ z-index:4;
+ display:flex;
+ flex-direction:column;
+ align-items:center;
+ filter:drop-shadow(0 6px 12px rgba(0,10,20,.6));
+ animation:moveTrees 10s linear infinite paused;
+}
+@keyframes moveTrees {
+  0% {
+    transform:translateX(0);
+  }
+
+  100% {
+    transform:translateX(-90vw);
+  }
+} 
+.tree-trunk{
+    width:16px;
+    height:45px;
+    border-radius:3px;
+    background:linear-gradient(
+        90deg,
+        #0f171e,
+        #2c3e50,
+        #0f171e
+    );
+    box-shadow:
+        inset -2px 0 4px rgba(0,0,0,.6),
+        0 2px 6px rgba(0,0,0,.5);
+}
+body.started .tree {
+ animation: moveTrees 22s linear infinite !important;
+}
+.tree-foliage{
+    position: relative;
+    width: 42px;
+    height: 52px;
+    background: radial-gradient(circle at 35% 25%,
+color-mix(in srgb,var(--tree-foliage),white 40%),
+var(--tree-foliage),
+color-mix(in srgb,var(--tree-foliage),black 30%));
+    clip-path: polygon(
+        50% 0%,
+        82% 22%,
+        68% 22%,
+        95% 50%,
+        72% 50%,
+        100% 82%,
+        75% 82%,
+        50% 100%,
+        25% 82%,
+        0% 82%,
+        28% 50%,
+        5% 50%,
+        32% 22%,
+        18% 22%
+    );
+    margin-bottom:-4px;
+    transform-origin:bottom center;
+    animation:windSway 2s ease-in-out infinite alternate;
+    box-shadow:
+        inset 0 10px 15px rgba(255,255,255,.9),
+        inset 0 -10px 15px rgba(0,150,180,.3),
+        0 0 20px rgba(220,245,255,.8);
+}
+
+.tree-foliage::before{
+    content:"";
+    position:absolute;
+    top:6px;
+    left:8px;
+    width:14px;
+    height:14px;
+    border-radius:50%;
+    background:rgba(255,255,255,.95);
+    filter:blur(3px);
+}
+
+.tree-foliage::after{
+    content:"";
+    position:absolute;
+    inset:0;
+    background:linear-gradient(
+        120deg,
+        rgba(255,255,255,.6),
+        transparent 45%,
+        rgba(0,100,130,.4)
+    );
+    clip-path:inherit;
+}
+
+.t1{
+  left:12%;
+  transform:scale(.85);
+  animation: floatTree 4s ease-in-out infinite alternate;
+}
+
+.t2{
+  left:85%;
+  transform:scale(1.25);
+  animation: floatTree 3.2s ease-in-out infinite alternate 0.5s;
+}
+
+.t3{
+  left:45%;
+  transform:scale(.95);
+  animation: floatTree 3.7s ease-in-out infinite alternate 1s;
+}
+
+@keyframes floatTree {
+  0% { transform: translateY(0) scale(var(--s, 1)); }
+  100% { transform: translateY(-6px) scale(var(--s, 1)); }
+}
+
+.t1 { --s: 0.85; }
+.t2 { --s: 1.25; }
+.t3 { --s: 0.95; }
+
+@keyframes windSway{
+  0%{ transform: rotate(-5deg) scaleY(1); }
+  25%{ transform: rotate(4deg) scaleY(1.04); }
+  50%{ transform: rotate(8deg) scaleY(0.98); }
+  75%{ transform: rotate(-6deg) scaleY(1.02); }
+  100%{ transform: rotate(3deg) scaleY(0.96); }
+}
+
+/* Herbes Enneigées & Brins de Frimas */
+.ground {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  height: 40px;
+  z-index: 20;
+  background: var(--ground-gradient);
+  border-top: 4px solid var(--ground-border);
+  box-shadow: 0 -12px 35px rgba(0, 229, 255, 0.4), inset 0 3px 8px rgba(255,255,255,0.9);
+  transition: all 1.5s ease-in-out;
+}
+.alert-box {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: #222;
+  color: white;
+  padding: 25px;
+  border-radius: 15px;
+  text-align: center;
+  z-index: 999999;
+  box-shadow: 0 0 20px black;
+}
+
+.alert-box button {
+  margin-top: 15px;
+  padding: 10px 25px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.grass-container {
+  position: absolute;
+  top: -12px;
+  left: 0;
+  width: 100%;
+  height: 12px;
+  display: flex;
+  justify-content: space-around;
+  pointer-events: none;
+}
+
+.blade {
+  width: 4px;
+  height: 100%;
+  background: var(--grass-blade);
+  border-radius: 50% 50% 0 0;
+  transform-origin: bottom center;
+  transition: background 1.5s ease-in-out;
+  animation: grassWind 1.8s ease-in-out infinite alternate;
+  box-shadow: 0 0 8px rgba(255, 255, 255, 0.8);
+}
+
+.blade:nth-child(even) { animation-duration: 2.2s; animation-delay: 0.3s; }
+.blade:nth-child(3n) { animation-duration: 1.5s; animation-delay: 0.6s; }
+
+@keyframes grassWind {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(18deg); }
+}
+
+/* ================= CIEL, Soleil & Nuages Enneigés ================= */
+
+.board {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  height: 100dvh;
+  margin: auto;
+  overflow: hidden;
+  background: var(--sky-gradient);
+  transition: background 1.5s ease-in-out;
+}
+
+.sun {
+  position: absolute;
+  width: 110px;
+  height: 110px;
+  border-radius: 50%;
+  top: 45px;
+  right: 80px;
+  background: var(--sun-bg);
+  box-shadow: var(--sun-shadow);
+  transition: all 1.5s ease-in-out;
+}
+
+/* Nuages de Tempête Neigeuse */
+.cloud {
+  position: absolute;
+  width: 130px;
+  height: 40px;
+  background: linear-gradient(180deg, #ffffff 0%, #d4f1f9 60%, #b2ebf2 100%);
+  border-radius: 50px;
+  box-shadow: 0 8px 30px rgba(0, 180, 216, 0.35), inset 0 -3px 8px rgba(0, 100, 150, 0.2);
+  z-index: 4;
+}
+
+.cloud::before, .cloud::after {
+  content: "";
+  position: absolute;
+  background: inherit;
+  border-radius: 50%;
+}
+
+.cloud::before { width: 55px; height: 55px; left: 15px; top: -22px; }
+.cloud::after { width: 70px; height: 70px; right: 15px; top: -28px; }
+
+.c1 { top: 70px; left: -150px; animation: moveCloud 22s linear infinite; }
+.c2 { top: 140px; left: -200px; transform: scale(0.85); opacity: 0.95; animation: moveCloud 32s linear infinite 6s; }
+
+@keyframes moveCloud {
+  0% { left: -150px; }
+  100% { left: 105vw; }
+}
+
+/* ================= PERSO================= */
+
+.person {
+  position: absolute;
+  width: 100px;
+  height: 125px;
+  left: 0;
+  bottom: 0;
+  z-index: 30;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.person img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  image-rendering: pixelated;
+  position: relative;
+  z-index: 2;
+  filter: drop-shadow(0 6px 12px rgba(0, 229, 255, 0.6));
+  animation: runnerMotion 0.3s infinite alternate ease-in-out;
+  text-shadow: 0 0 10px #000;
+}
+
+@keyframes runnerMotion {
+  from { transform: translateY(0); }
+  to { transform: translateY(-4px); }
+}
+
+/* Aura de chakra */
+.person::before {
+  content: "";
+  position: absolute;
+  inset: -6px;
+  border-radius: 50%;
+  background: radial-gradient(circle, var(--chakra-glow) 0%, rgba(0, 176, 255, 0.4) 50%, transparent 80%);
+  filter: blur(8px);
+  z-index: 1;
+  animation: elegantAura 1.4s infinite alternate ease-in-out;
+}
+
+@keyframes elegantAura {
+  0% { transform: scale(0.92); opacity: 0.7; filter: blur(6px); }
+  100% { transform: scale(1.2); opacity: 1; filter: blur(12px); }
+}
+
+/* ================= OBSTACLES ================= */
+
+/* Rasenshuriken*/
+.block_bas {
+  position: absolute;
+  right: -100px;
+  width: 47px;
+  height: 50px;
+  bottom: 35px;
+  z-index: 100;
+  background: radial-gradient(circle, #ffffff 15%, #b2ebf2 40%, #00e5ff 70%, #0056b3 100%);
+  clip-path: polygon(50% 0%, 65% 28%, 100% 15%, 72% 50%, 100% 85%, 65% 72%, 50% 100%, 35% 72%, 0% 85%, 28% 50%, 0% 15%, 35% 28%);
+  box-shadow: 0 0 30px #00e5ff, 0 0 60px #80deea;
+  animation: spinRasenshuriken 0.12s linear infinite;
+}
+
+@keyframes spinRasenshuriken {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* dragon*/
+.block_haut {
+  position: absolute;
+  right: -100px;
+  width: 85px;
+  height: 95px;
+  bottom: 85px;
+  z-index: 100;
+  background: radial-gradient(circle at 30% 30%, #ffffff 0%, #80d8ff 30%, #0091ea 65%, #0d47a1 100%);
+  clip-path: polygon(100% 0%, 80% 20%, 95% 40%, 60% 50%, 90% 70%, 70% 85%, 100% 100%, 30% 90%, 0% 50%, 30% 10%);
+  filter: drop-shadow(0 0 25px #00b0ff) drop-shadow(0 0 45px #80d8ff);
+  animation: katonRoar 0.2s infinite alternate;
+}
+
+@keyframes katonRoar {
+  0% { transform: scaleY(0.95) translateX(0); }
+  100% { transform: scaleY(1.08) translateX(-5px); }
+}
+
+/* Shiki Fūjin Sceau Flottant Glacé Démoniaque */
+.laser {
+  position: absolute;
+  right: -100px;
+  bottom: 75px;
+  width: 32px;
+  height: 135px;
+  background: linear-gradient(180deg, rgba(224, 247, 250, 0.98) 0%, rgba(128, 222, 234, 0.9) 40%, rgba(0, 96, 100, 0.98) 100%);
+  border-radius: 18px;
+  border: 2px solid #ffffff;
+  box-shadow: 0 0 30px #00e5ff, inset 0 0 15px #ffffff;
+  z-index: 100;
+  animation: deathGodGhost 0.8s infinite alternate ease-in-out;
+}
+
+.laser::before {
+  content: "死";
+  position: absolute;
+  top: 14px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-family: 'Shojumaru', serif;
+  color: #002b49;
+  font-size: 20px;
+  text-shadow: 0 0 12px #80deea, 0 0 20px #ffffff;
+}
+
+@keyframes deathGodGhost {
+  0% { transform: translateY(0); filter: drop-shadow(0 0 12px #00b0ff); }
+  100% { transform: translateY(-18px); filter: drop-shadow(0 0 30px #80deea); }
+}
+
+/* Piquets de Cristal de Glace Sanglante */
+.spike {
+  position: absolute;
+  right: -100px;
+  bottom: 35px;
+  width: 50px;
+  height: 55px;
+  background: linear-gradient(180deg, #ffffff 0%, #80deea 35%, #00838f 100%);
+  clip-path: polygon(20% 100%, 0% 30%, 35% 50%, 50% 0%, 65% 50%, 100% 30%, 80% 100%);
+  filter: drop-shadow(0 0 20px #00e5ff);
+  z-index: 100;
+  animation: spikePulse 0.3s infinite alternate;
+}
+
+@keyframes spikePulse {
+  0% { transform: scaleY(1); }
+  100% { transform: scaleY(1.18); }
+}
+
+/* Mouvements du Joueur */
+.person.jump {
+  animation: jump 1s cubic-bezier(.28,.84,.42,1);
+}
+
+@keyframes jump {
+  0% { transform: translateY(0); }
+  50% { transform: translateY(-200px); }
+  75%{
+    transform: translateY(-190px); 
+  }
+  100% { transform: translateY(0); }
+}
+
+.person.slide {
+  animation: slide .8s cubic-bezier(.25,.8,.25,1);
+}
+
+@keyframes slide {
+  0% { transform: translateY(0) scaleY(1); }
+  20% { transform: translateY(28px) scaleY(.45); }
+  80% { transform: translateY(28px) scaleY(.45); }
+  100% { transform: translateY(0) scaleY(1); }
+}
+
+.hitbox {
+  position: absolute;
+  width: 45px;
+  height: 120px;
+  bottom: 0;
+  left: 0;
+}
+
+.person.slide .hitbox {
+  width: 85px;
+  height: 55px;
+}
+
+
+
+
+
+/* ================= TIMER ================= */
+
+.timer {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: rgba(2, 8, 18, 0.92);
+  backdrop-filter: blur(16px);
+}
+
+.timer p {
+  font-size: clamp(90px, 25vw, 200px);
+  color: #80deea;
+  font-weight: 900;
+  font-family: 'Shojumaru', sans-serif;
+  text-shadow:
+    0 0 20px #00e5ff, 0 0 40px #00838f;
+  animation: pulse 1s infinite cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+@keyframes pulse {
+  0% { transform: scale(0.8); opacity: 0.5; filter: blur(2px); }
+  50% { transform: scale(1.1); opacity: 1; filter: blur(0px); }
+  100% { transform: scale(0.9); opacity: 0.8; filter: blur(1px); }
+}
+
+.timer.go {
+  animation: hideTimer .6s ease-in forwards;
+}
+
+@keyframes hideTimer {
+  100% {
+    opacity: 0;
+    transform: scale(2.5);
+    visibility: hidden;
+  }
+}
+
+/* ================= INTERFACE ================= */
+
+.menu {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-evenly;
+  align-items: center;
+  padding: 25px;
+  background: radial-gradient(circle at center, #0b2239 0%, #040e18 60%, #01050a 100%);
+  z-index: 10000;
+  border: 3px solid #00e5ff;
+  box-shadow: inset 0 0 80px rgba(0, 229, 255, 0.3);
+}
+
+.logo h1 {
+  font-family: 'Shojumaru', cursive, sans-serif;
+  font-size: 42px;
+  color: #fff;
+  text-shadow: 0 0 20px #00e5ff, 0 0 40px #00838f;
+  text-align: center;
+}
+
+.logo p {
+  color: #80deea;
+  font-size: 15px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  text-align: center;
+  margin-top: 5px;
+  text-shadow: 0 0 10px rgba(128, 222, 234, 0.8);
+}
+
+.stats {
+  display: flex;
+  gap: 18px;
+}
+
+.stat {
+  width: 140px;
+  padding: 14px;
+  background: rgba(0, 229, 255, 0.08);
+  border: 1px solid var(--glass-border);
+  border-radius: 14px;
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  color: white;
+  backdrop-filter: blur(8px);
+  box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+}
+
+.stat i {
+  font-size: 24px;
+  color: #ffd700;
+  filter: drop-shadow(0 0 8px #ffd700);
+}
+
+.buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 300px;
+}
+
+.menu-btn {
+  height: 50px;
+  border: 1px solid var(--glass-border);
+  border-radius: 14px;
+  font-size: 16px;
+  font-weight: 700;
+  color: white;
+  background: rgba(255, 255, 255, 0.05);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  cursor: pointer;
+  transition: 0.3s;
+  backdrop-filter: blur(5px);
+}
+
+.menu-btn:hover {
+  background: rgba(0, 229, 255, 0.2);
+  border-color: #80deea;
+  box-shadow: 0 0 20px rgba(0, 229, 255, 0.5);
+}
+
+#playBtn {
+  width: 300px;
+  height: 65px;
+  border: none;
+  border-radius: 35px;
+  font-size: 24px;
+  font-weight: 900;
+  font-family: 'Shojumaru', sans-serif;
+  color: #002b49;
+  background: linear-gradient(135deg, #ffffff 0%, #80deea 50%, #00e5ff 100%);
+  box-shadow: 0 0 35px rgba(0, 229, 255, 0.9), inset 0 2px 8px #ffffff;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+#playBtn:hover {
+  transform: scale(1.05);
+  box-shadow: 0 0 50px rgba(0, 229, 255, 1), inset 0 2px 10px #ffffff;
+}
+
+#exit {
+  position: absolute;
+  top: 15px;
+  left: 15px;
+  z-index: 500;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: 1px solid rgba(128, 222, 234, 0.6);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: #80deea;
+  font-size: 18px;
+  background: rgba(5, 15, 25, 0.85);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 0 12px rgba(0, 229, 255, 0.4);
+  cursor: pointer;
+  z-index: 1000000;
+}
+
+.game-timer-hud {
+  position: absolute;
+  top: 15px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 400;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 20px;
+  border-radius: 25px;
+  background: rgba(5, 15, 25, 0.85);
+  backdrop-filter: blur(10px);
+  border: 1px solid #00e5ff;
+  box-shadow: 0 0 20px rgba(0, 229, 255, 0.5);
+}
+
+.game-timer-hud i { color: #80deea; font-size: 20px; filter: drop-shadow(0 0 6px #80deea); }
+
+.time-display {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 22px;
+  font-weight: 800;
+  color: #ffffff;
+}
+
+.hud-right {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  z-index: 400;
+}
+
+.coins-box {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  border-radius: 20px;
+  background: rgba(5, 15, 25, 0.85);
+  backdrop-filter: blur(10px);
+  border: 1px solid #ffd700;
+  color: white;
+  box-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
+}
+
+.coins-box i { color: #ffd700; font-size: 20px; filter: drop-shadow(0 0 6px #ffd700); }
+
+#coinCount {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 20px;
+  font-weight: 800;
+}
+
+/* PIECES D'OR */
+.coinBas, .coinHaut {
+  position: absolute;
+  right: -100px;
+  z-index: 100;
+border-radius:50%;
+font-size: 35px;
+background: gold;
+color: gold;
+
+}
+
+.coinBas { bottom: 38px; }
+.coinHaut { bottom: 100px; }
+
+
+
+
+
+/* GAMEOVER  */
+.game-over{
+    position:fixed;
+    inset:0;
+    background:rgba(2, 10, 20, 0.88);
+    backdrop-filter:blur(12px);
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    align-items:center;
+    overflow:hidden;
+    z-index:1000000;
+}
+
+.hidden{
+  display:none;
+}
+
+.game-over h1{
+  font-size:42px;
+  color:#fff;
+  margin-bottom:25px;
+  font-family:Orbitron,sans-serif;
+  text-shadow:0 0 20px #00e5ff, 0 0 35px #00838f;
+}
+
+.score-box{
+  background:rgba(255, 255, 255, 0.08);
+  padding:20px 45px;
+  border-radius:18px;
+  text-align:center;
+  margin-bottom:35px;
+  border:2px solid rgba(128, 222, 234, 0.4);
+  box-shadow: 0 0 25px rgba(0, 229, 255, 0.2);
+}
+
+@keyframes cycleSoleil{
+  0%{
+    transform:translateY(0);
+    filter:brightness(1);
+  }
+  25%{
+    transform:translate(-40px,-30px);
+  }
+  50%{
+    transform:translate(-80px,0);
+  }
+  75%{
+    transform:translate(-40px,25px);
+  }
+  100%{
+    transform:translateY(0);
+  }
+}
+
+.score-box small{
+  color:#b2ebf2;
+  font-size:15px;
+}
+
+.score-box h2{
+  margin-top:8px;
+  font-size:40px;
+  color:#fff;
+}
+
+.buttons{
+  display:flex;
+  flex-direction:column;
+  gap:15px;
+  width:90%;
+}
+
+.buttons button{
+  border:none;
+  padding:16px;
+  border-radius:16px;
+  font-size:18px;
+  font-weight:bold;
+  cursor:pointer;
+  transition:.2s;
+}
+
+.buttons button:active{
+  transform:scale(.95);
+}
+
+@keyframes cycleSol{
+  0%,100%{ filter:brightness(1); }
+  25%{ filter:brightness(1.15); }
+  50%{ filter:brightness(.85); }
+  75%{ filter:brightness(.7); }
+}
+
+@keyframes cycleSaisons{
+  0%,100%{ filter:hue-rotate(0deg); }
+  25%{ filter:hue-rotate(15deg); }
+  50%{ filter:hue-rotate(30deg); }
+  75%{ filter:hue-rotate(45deg); }
+}
+
+.continue-btn{
+  background:linear-gradient(#ffd700,#ffa000);
+  color:#111;
+  box-shadow: 0 0 15px rgba(255, 215, 0, 0.5);
+}
+
+.replay-btn{
+  background:linear-gradient(#00e5ff,#00838f);
+  color:white;
+  box-shadow: 0 0 15px rgba(0, 229, 255, 0.5);
+}
+
+.home-btn{
+  background:linear-gradient(#3a86ff,#03045e);
+  color:white;
+  box-shadow: 0 0 15px rgba(58, 134, 255, 0.5);
+}
+
+@keyframes fade{
+  from{
+    opacity:0;
+    transform:scale(.9);
+  }
+  to{
+    opacity:1;
+    transform:scale(1);
+  }
+}
+
+/* ------------------------------------------------------------
+   1. PRINTEMPS 
+   ------------------------------------------------------------ */
+
+/* Rasenshuriken de Pétales & Vent Floral */
+body.season-spring .block_bas {
+  background: radial-gradient(circle, #ffffff 15%, #c8e6c9 40%, #66bb6a 70%, #1b5e20 100%);
+  box-shadow: 0 0 30px #66bb6a, 0 0 60px #a5d6a7;
+}
+
+/* Katon Dragon de Liane / Souffle Botanique */
+body.season-spring .block_haut {
+  background: radial-gradient(circle at 30% 30%, #ffffff 0%, #a5d6a7 30%, #4caf50 65%, #1b5e20 100%);
+  filter: drop-shadow(0 0 25px #4caf50) drop-shadow(0 0 45px #81c784);
+}
+
+/* Shiki Fūjin Sceau du Esprit de la Forêt */
+body.season-spring .laser {
+  background: linear-gradient(180deg, rgba(232, 245, 233, 0.98) 0%, rgba(165, 214, 167, 0.9) 40%, rgba(46, 125, 50, 0.98) 100%);
+  border-color: #a5d6a7;
+  box-shadow: 0 0 30px #66bb6a, inset 0 0 15px #ffffff;
+}
+body.season-spring .laser::before {
+  color: #1b5e20;
+  text-shadow: 0 0 12px #a5d6a7, 0 0 20px #ffffff;
+}
+
+/* Piquets de Ronces Divines */
+body.season-spring .spike {
+  background: linear-gradient(180deg, #ffffff 0%, #a5d6a7 35%, #2e7d32 100%);
+  filter: drop-shadow(0 0 20px #4caf50);
+}
+
+/* Pièces d'Or Fleurie (Reflets Vert/Or) */
+body.season-spring .coinBas, 
+body.season-spring .coinHaut {
+  background: radial-gradient(circle at 35% 35%, #ffffff 0%, #cddc39 45%, #afb42b 75%, #33691e 100%);
+  border-color: #f0f4c3;
+  box-shadow: 0 0 20px rgba(205, 220, 57, 0.9), inset 0 0 8px #ffffff;
+  color: #1b5e20;
+}
+
+/* Aura de Chakra Printanier */
+body.season-spring .person::before {
+  background: radial-gradient(circle, rgba(76, 175, 80, 0.8) 0%, rgba(139, 195, 74, 0.4) 50%, transparent 80%);
+}
+
+
+/* ------------------------------------------------------------
+   2. ÉTÉ 
+   ------------------------------------------------------------ */
+
+/* Rasenshuriken Magmatique / Solde Supérieur */
+body.season-summer .block_bas {
+  background: radial-gradient(circle, #ffffff 15%, #ffe082 40%, #ff9800 70%, #b71c1c 100%);
+  box-shadow: 0 0 30px #ff9800, 0 0 60px #ff5722;
+}
+
+/* Katon Dragon Flamboyant Infernal */
+body.season-summer .block_haut {
+  background: radial-gradient(circle at 30% 30%, #ffffff 0%, #ffcc80 30%, #ff5722 65%, #880e4f 100%);
+  filter: drop-shadow(0 0 25px #ff3d00) drop-shadow(0 0 45px #ff9100);
+}
+
+/* Shiki Fūjin Sceau Infernale de Lave */
+body.season-summer .laser {
+  background: linear-gradient(180deg, rgba(255, 243, 224, 0.98) 0%, rgba(255, 183, 77, 0.9) 40%, rgba(230, 81, 0, 0.98) 100%);
+  border-color: #ffe082;
+  box-shadow: 0 0 30px #ff6f00, inset 0 0 15px #ffffff;
+}
+body.season-summer .laser::before {
+  color: #4a148c;
+  text-shadow: 0 0 12px #ffb74d, 0 0 20px #ffffff;
+}
+
+/* Piquets de Magma Solide */
+body.season-summer .spike {
+  background: linear-gradient(180deg, #ffffff 0%, #ffb74d 35%, #d84315 100%);
+  filter: drop-shadow(0 0 20px #ff3d00);
+}
+
+/* Pièces d'Or Solaire Ardent */
+body.season-summer .coinBas, 
+body.season-summer .coinHaut {
+  background: radial-gradient(circle at 35% 35%, #ffffff 0%, #ffab00 45%, #ff6d00 75%, #dd2c00 100%);
+  border-color: #ffe57f;
+  box-shadow: 0 0 25px rgba(255, 109, 0, 0.95), inset 0 0 8px #ffffff;
+  color: #3e2723;
+}
+
+/* Aura de Chakra Magmatique */
+body.season-summer .person::before {
+  background: radial-gradient(circle, rgba(255, 87, 34, 0.85) 0%, rgba(255, 193, 7, 0.5) 50%, transparent 80%);
+}
+
+
+/* ------------------------------------------------------------
+   3. AUTOMNE (Thème Ambre, Vents Toxiques & Cristal de Terre)
+   ------------------------------------------------------------ */
+
+/* Rasenshuriken de Feuilles Brûlées / Ambre Vent */
+body.season-autumn .block_bas {
+  background: radial-gradient(circle, #ffffff 15%, #ffe0b2 40%, #fb8c00 70%, #4e342e 100%);
+  box-shadow: 0 0 30px #fb8c00, 0 0 60px #ffb74d;
+}
+
+/* Katon Dragon Démoniaque d'Ambre */
+body.season-autumn .block_haut {
+  background: radial-gradient(circle at 30% 30%, #ffffff 0%, #ffcc80 30%, #e65100 65%, #3e2723 100%);
+  filter: drop-shadow(0 0 25px #f57c00) drop-shadow(0 0 45px #ffb74d);
+}
+
+/* Shiki Fūjin Sceau Spectral Cendré */
+body.season-autumn .laser {
+  background: linear-gradient(180deg, rgba(255, 243, 224, 0.98) 0%, rgba(255, 152, 0, 0.9) 40%, rgba(62, 39, 35, 0.98) 100%);
+  border-color: #ffcc80;
+  box-shadow: 0 0 30px #ef6c00, inset 0 0 15px #ffffff;
+}
+body.season-autumn .laser::before {
+  color: #1b0000;
+  text-shadow: 0 0 12px #ffb74d, 0 0 20px #ffffff;
+}
+
+/* Piquets d'Ambre Brut */
+body.season-autumn .spike {
+  background: linear-gradient(180deg, #ffffff 0%, #ffa726 35%, #4e342e 100%);
+  filter: drop-shadow(0 0 20px #fb8c00);
+}
+
+/* Pièces d'Or Cuivrées Antiques */
+body.season-autumn .coinBas, 
+body.season-autumn .coinHaut {
+  background: radial-gradient(circle at 35% 35%, #ffffff 0%, #ffb300 45%, #c0392b 75%, #4a235a 100%);
+  border-color: #ffe082;
+  box-shadow: 0 0 20px rgba(230, 126, 34, 0.9), inset 0 0 8px #ffffff;
+  color: #211103;
+}
+
+/* Aura de Chakra d'Automne */
+body.season-autumn .person::before {
+  background: radial-gradient(circle, rgba(239, 108, 0, 0.85) 0%, rgba(141, 110, 99, 0.5) 50%, transparent 80%);
+}
+
+
+/* Désactiver le gel en été/printemps pour une eau plus fluide */
+body.season-spring .waterfall,
+body.season-summer .waterfall {
+  background: linear-gradient(180deg, rgba(255,255,255,0.9) 0%, rgba(3, 169, 244, 0.9) 60%, rgba(1, 87, 155, 0.95) 100%);
+  box-shadow: 0 0 20px rgba(3, 169, 244, 0.8);
+}
+
+/* Assécher la cascade en automne */
+body.season-autumn .waterfall {
+  opacity: 0.3;
+  filter: grayscale(0.8);
+}
+
+
+
+
+/* ============================================================
+   MÉTAMORPHOSE COMPLÈTE DES MONTAGNES PAR SAISON
+   ============================================================ */
+
+/* ------------------------------------------------------------
+   1. PRINTEMPS (Roches Moussues & Sommets Verdoyants)
+   ------------------------------------------------------------ */
+
+body.season-spring .mountain::before {
+  /* Ombres moussues et reflétant la végétation */
+  background: 
+    linear-gradient(105deg, rgba(255,255,255,0.4) 0%, rgba(255,255,255,0.1) 48%, rgba(27,94,32,0.4) 50%, rgba(13,40,15,0.7) 100%),
+    repeating-linear-gradient(45deg, rgba(255,255,255,0.05) 0px, rgba(255,255,255,0.05) 2px, transparent 2px, transparent 5px);
+}
+
+body.season-spring .mountain::after {
+  /* Remplacement du sommet de glace par des cimes d'herbes/mousse lumineuses */
+  background: linear-gradient(180deg, #a8e063 0%, rgba(139, 195, 74, 0.85) 60%, rgba(76, 175, 80, 0.2) 100%);
+  filter: drop-shadow(0 6px 15px rgba(168, 224, 99, 0.6));
+}
+
+
+/* ------------------------------------------------------------
+   2. ÉTÉ (Canyons Insolés & Roches Magmatiques / Sèches)
+   ------------------------------------------------------------ */
+
+body.season-summer .mountain::before {
+  /* Ombres de terre chaude et canyon aride */
+  background: 
+    linear-gradient(105deg, rgba(255,235,59,0.3) 0%, rgba(255,255,255,0.05) 48%, rgba(191,54,12,0.5) 50%, rgba(62,39,35,0.85) 100%),
+    repeating-linear-gradient(45deg, rgba(255,255,255,0.05) 0px, rgba(255,255,255,0.05) 2px, transparent 2px, transparent 5px);
+}
+
+body.season-summer .mountain::after {
+  /* Sommets asséchés par le soleil ardent */
+  background: linear-gradient(180deg, #fff59d 0%, rgba(255, 179, 0, 0.8) 60%, rgba(230, 81, 0, 0.2) 100%);
+  filter: drop-shadow(0 6px 15px rgba(255, 179, 0, 0.7));
+}
+
+
+/* ------------------------------------------------------------
+   3. AUTOMNE (Roches d'Argile, Feuilles Mortes & Ambre)
+   ------------------------------------------------------------ */
+
+body.season-autumn .mountain::before {
+  /* Texture d'argile sombre et forêt d'automne */
+  background: 
+    linear-gradient(105deg, rgba(255,224,178,0.35) 0%, rgba(255,255,255,0.05) 48%, rgba(93,64,55,0.6) 50%, rgba(33,17,3,0.9) 100%),
+    repeating-linear-gradient(45deg, rgba(255,255,255,0.05) 0px, rgba(255,255,255,0.05) 2px, transparent 2px, transparent 5px);
+}
+
+body.season-autumn .mountain::after {
+  /* Sommets recouverts de feuillage orange d'automne */
+  background: linear-gradient(180deg, #ffb74d 0%, rgba(230, 81, 0, 0.85) 60%, rgba(109, 76, 65, 0.3) 100%);
+  filter: drop-shadow(0 6px 15px rgba(239, 108, 0, 0.6));
+}
+
+  </style>
+</head>
+
+<body>
+<!-- =========================
+         MENU
+========================= -->
+
+<!-- GAME OVER -->
+<div id="gameOver" class="game-over hidden">
+
+  <h1>GAME OVER</h1>
+
+  <div class="score-box">
+    <small>Score</small>
+    <h2 id="finalScore">0</h2>
+  </div>
+
+  <div class="buttons">
+
+    <button class="continue-btn">
+      <i class="fa-solid fa-coins"></i> Continue (10)
+    </button>
+
+    <button class="replay-btn">
+      🔄 Replay
+    </button>
+
+    <button class="home-btn">
+      🏠 Return
+    </button>
+
+  </div>
+
+</div>
+<div id="menu" class="menu">
+
+  <!-- Logo -->
+  <div class="logo">
+    <h1>SHINOBI RUNNER</h1>
+    <p>Infinity Adventure</p>
+  </div>
+
+  <!-- Statistiques -->
+  <div class="stats">
+
+    <div class="stat">
+      <i class="fa-solid fa-trophy"></i>
+      <div>
+        <small>Best score</small>
+        <h3 id="bestScore">0</h3>
+      </div>
+    </div>
+    
+  
+    <div class="stat">
+      <i class="fa-solid fa-coins"></i>
+      <div>
+        <small>Coins</small>
+        <h3 id="coins">0</h3>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Bouton Play -->
+  <button id="playBtn" onclick="startTimer()">
+    <i class="fa-solid fa-play"></i>
+    PLAY
+  </button>
+
+</div>
+
+<!-- =========================
+         TIMER
+========================= -->
+<div class="timer">
+  <p>3</p>
+</div>
+
+<!-- =========================
+          GAME
+========================= -->
+<div class="board">
+
+  <!-- HUD -->
+  <div class="game-timer-hud">
+    <i class="fa-solid fa-star"></i>
+    <span class="time-display" id="score">0</span>
+  </div>
+  
+<div class="tree t1">
+  <div class="tree-foliage"></div>
+  <div class="tree-trunk"></div>
+</div>
+
+<div class="tree t2">
+  <div class="tree-foliage"></div>
+  <div class="tree-trunk"></div>
+</div>
+
+<div class="tree t3">
+  <div class="tree-foliage"></div>
+  <div class="tree-trunk"></div>
+</div>
+
+  <div class="hud-right">
+    <div class="coins-box">
+      <i class="fa-solid fa-coins"></i>
+      <span id="coinCount">0</span>
+    </div>
+  </div>
+
+  <!-- Soleil -->
+  <div class="sun"></div>
+
+  <!-- Nuages -->
+  <div class="cloud c1"></div>
+  <div class="cloud c2"></div>
+
+  <!-- Montagnes -->
+  <div class="mountains-container">
+
+    <div class="mountain-group">
+      <div class="mountain m1"></div>
+
+      <div class="mountain m2"></div>
+         <div class="waterfall"></div>
+      <div class="mountain m3"></div>
+    </div>
+
+    <div class="mountain-group">
+      <div class="mountain m1"></div>
+     
+      <div class="mountain m2"></div>
+               <div class="waterfall"></div>
+      <div class="mountain m3"></div>
+    </div>
+
+  </div>
+
+  <!-- Sol -->
+  <div class="ground"></div>
+
+  <!-- Personnage -->
+  <div class="person">
+    <img
+      src="naruto.gif"
+      alt="Oops! The character can't be downloaded in your browser or device."
+    >
+    <div class="hitbox"></div>
+  </div>
+
+</div>
+
+<!-- =========================
+        BOUTON RETOUR
+========================= -->
+<button id="exit" onclick="history.back()">
+  <i class="fa-solid fa-arrow-left"></i>
+</button>
+
+<script>
+// --- DOM & GAME STATE ---
+const game_over_score = document.getElementById("finalScore");
+const gameOverModal = document.getElementById("gameOver");
+const board = document.querySelector(".board");
+const person = document.querySelector(".person");
+const hitbox = document.querySelector(".hitbox");
+const menu = document.getElementById("menu");
+const timer = document.querySelector(".timer");
+const text = document.querySelector(".timer p");
+
+let movingIntervals = [];
+let animationFrame = null;
+let obstacleInterval = null;
+let coinInterval = null;
+let interval_season = null;
+
+let gameOver = false;
+let gamePaused = false;
+let score = 0;
+let count = 3;
+let coins = Number(localStorage.getItem("coins")) || 0;
+
+// --- AUDIO ---
+const soundTimer = new Howl({ src: ["timer.mp3"], volume: 1 });
+const naruto = new Howl({ src: ["naruto.mp3"], volume: 1, loop: true });
+
+// --- INITIALIZATION ---
+function initStats() {
+  const best = localStorage.getItem("score") || 0;
+  document.getElementById("bestScore").textContent = best;
+  document.getElementById("coins").textContent = coins;
+  document.getElementById("coinCount").textContent = coins;
+}
+initStats();
+
+// --- GAME CONTROLS & TIMERS ---
+function startTimer() {
+  cleanupGame(); // Prevent duplicate running loops
+  
+  gamePaused = false;
+  gameOver = false;
+  count = 3;
+
+  menu.style.display = "none";
+  gameOverModal.classList.add("hidden");
+  gameOverModal.style.display = ""; // Reset inline style if previously set
+  
+  timer.style.display = "flex";
+  timer.classList.remove("go");
+  text.textContent = count;
+
+  const countdown = setInterval(() => {
+    soundTimer.play();
+    text.textContent = count;
+    count--;
+
+    if (count < 0) {
+      clearInterval(countdown);
+      text.textContent = "GO!";
+
+      setTimeout(() => {
+        timer.classList.add("go");
+        soundTimer.stop();
+        document.body.classList.add("started");
+
+        // Start game loops
+        lancerObstacles();
+        lancerCoin();
+        seasons();
+        gameloop();
+        naruto.play();
+      }, 1000);
+    }
+  }, 1000);
+}
+
+function cleanupGame() {
+  // Clear interval trackers
+  movingIntervals.forEach(clearInterval);
+  movingIntervals = [];
+
+  clearInterval(obstacleInterval);
+  clearInterval(coinInterval);
+  clearInterval(interval_season);
+
+  if (animationFrame) {
+    cancelAnimationFrame(animationFrame);
+  }
+
+  // Remove existing game elements
+  document.querySelectorAll(".block_bas, .block_haut, .spike, .laser, .coinBas, .coinHaut")
+    .forEach(el => el.remove());
+
+  // Reset player actions
+  person.classList.remove("jump", "slide");
+}
+
+// --- OBSTACLES & COINS ---
+function createEntity(className, innerHTML, speed, onBoundary) {
+  let position = -100;
+  const element = document.createElement("div");
+  element.classList.add(className);
+  if (innerHTML) element.innerHTML = innerHTML;
+  board.appendChild(element);
+
+  const interval = setInterval(() => {
+    if (!gamePaused) {
+      position += speed;
+      element.style.right = position + "px";
+    }
+
+    if (position > window.innerWidth) {
+      clearInterval(interval);
+      element.remove();
+      if (onBoundary) onBoundary();
+    }
+  }, 15);
+
+  movingIntervals.push(interval);
+}
+
+function coin1() { createEntity("coinBas", "🪙", 3); }
+function coin2() { createEntity("coinHaut", "🪙", 3); }
+
+function obstacle1() { createEntity("block_bas", null, 4, incrementScore); }
+function obstacle2() { createEntity("block_haut", null, 4, incrementScore); }
+function obstacle3() { createEntity("spike", null, 4, incrementScore); }
+function obstacle4() { createEntity("laser", null, 5, incrementScore); }
+
+function incrementScore() {
+  score++;
+  document.getElementById("score").textContent = score;
+}
+
+function lancerObstacles() {
+  obstacleInterval = setInterval(() => {
+    if (gamePaused) return;
+    const hasard = Math.floor(Math.random() * 7);
+    switch (hasard) {
+      case 0: case 1: case 2: obstacle1(); break;
+      case 3: case 4: obstacle2(); break;
+      case 5: obstacle3(); break;
+      case 6: obstacle4(); break;
+    }
+  }, 7500);
+}
+
+function lancerCoin() {
+  coinInterval = setInterval(() => {
+    if (gamePaused) return;
+    Math.random() > 0.5 ? coin1() : coin2();
+  }, 20000);
+}
+
+// --- COLLISIONS & LOOP ---
+function collision(objet) {
+  const p = hitbox.getBoundingClientRect();
+  const o = objet.getBoundingClientRect();
+
+  return !(
+    p.right < o.left ||
+    p.left > o.right ||
+    p.bottom < o.top ||
+    p.top > o.bottom
+  );
+}
+
+function gameloop() {
+  if (gameOver || gamePaused) return;
+
+  const obstacles = document.querySelectorAll(".block_haut, .block_bas, .laser, .spike");
+  obstacles.forEach(obstacle => {
+    if (collision(obstacle)) {
+      gameOver = true;
+      finJeu();
+    }
+  });
+
+  const coinsElements = document.querySelectorAll(".coinHaut, .coinBas");
+  coinsElements.forEach(coin => {
+    if (collision(coin)) {
+      addCoin();
+      coin.remove();
+    }
+  });
+
+  animationFrame = requestAnimationFrame(gameloop);
+}
+
+// --- SEASONS ---
+function seasons() {
+  const seasonsList = ["season-spring", "season-summer", "season-autumn", "season-winter"];
+  let index = 0;
+
+  interval_season = setInterval(() => {
+    if (gamePaused) return;
+    document.body.classList.remove(...seasonsList);
+    document.body.classList.add(seasonsList[index]);
+    index = (index + 1) % seasonsList.length;
+  }, 20000);
+}
+
+// --- MOVEMENT ---
+function jump() {
+  if (person.classList.contains("jump")) return;
+  person.classList.add("jump");
+  setTimeout(() => person.classList.remove("jump"), 1000);
+}
+
+function slide() {
+  if (person.classList.contains("slide")) return;
+  person.classList.add("slide");
+  setTimeout(() => person.classList.remove("slide"), 800);
+}
+
+// Gestures & Key Bindings
+const hammer = new Hammer(board, { touchAction: "none" });
+hammer.get("swipe").set({ direction: Hammer.DIRECTION_VERTICAL, threshold: 20 });
+hammer.on("swipeup", () => { if (!gamePaused) jump(); });
+hammer.on("swipedown", () => { if (!gamePaused) slide(); });
+
+document.addEventListener("keydown", (e) => {
+  if (e.code === "Space" && !gamePaused) jump();
+  if (e.code === "ArrowDown" && !gamePaused) slide();
+});
+
+// --- GAME OVER & ECONOMY ---
+function finJeu() {
+  gamePaused = true;
+  clearInterval(obstacleInterval);
+  clearInterval(coinInterval);
+  clearInterval(interval_season);
+
+  gameOverModal.classList.remove("hidden");
+  timer.style.display = "none";
+  naruto.stop();
+
+  game_over_score.textContent = score;
+
+  const ancienScore = localStorage.getItem("score");
+  if (ancienScore === null || score > Number(ancienScore)) {
+    localStorage.setItem("score", score);
+    document.getElementById("bestScore").textContent = score;
+  } else {
+    document.getElementById("bestScore").textContent = ancienScore;
+  }
+}
+
+function addCoin() {
+  coins++;
+  localStorage.setItem("coins", coins);
+  document.getElementById("coins").textContent = coins;
+  document.getElementById("coinCount").textContent = coins;
+}
+
+// --- BUTTON EVENTS ---
+document.querySelector(".continue-btn").addEventListener("click", () => {
+  if (coins >= 10) {
+    coins -= 10;
+    localStorage.setItem("coins", coins);
+    document.getElementById("coins").textContent = coins;
+    document.getElementById("coinCount").textContent = coins;
+
+    startTimer(); 
+  }else {
+    Toastify({
+  text: "🪙 Insufficient Coins!\nYou need at least 10 coins to continue.",
+  duration: 5000,
+  gravity: "top",
+  position: "center",
+  close: true,
+  stopOnFocus: true,
+  style: {
+    background: "linear-gradient(135deg, #ff4b2b, #ff416c)",
+    color: "#fff",
+    borderRadius: "12px",
+    fontWeight: "bold",
+    padding: "15px",
+    boxShadow: "0 8px 20px rgba(0,0,0,0.3)"
+  }
+}).showToast();
+  }
+}); 
+
+
+
+
+document.querySelector(".replay-btn").addEventListener("click", () => {
+  score = 0;
+  document.getElementById("score").textContent = score;
+  document.body.classList.remove("started", "season-spring", "season-summer", "season-autumn", "season-winter");
+  startTimer();
+});
+
+document.querySelector(".home-btn").addEventListener("click", () => {
+  gamePaused = true;
+  gameOver = false;
+  score = 0;
+
+  cleanupGame();
+
+  gameOverModal.classList.add("hidden");
+  timer.style.display = "flex";
+  menu.style.display = "flex";
+
+  document.getElementById("score").textContent = 0;
+  document.body.classList.remove("started", "season-spring", "season-summer", "season-autumn", "season-winter");
+
+  naruto.stop();
+  soundTimer.stop();
+});
+</script>
+</body>
+
+</html>

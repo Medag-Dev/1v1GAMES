@@ -1,0 +1,435 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>1v1 Games | Play 1v1 Games Online</title>
+
+    <meta
+      name="description"
+      content="Play fun 1v1 games online with friends."
+    />
+
+    <meta name="robots" content="index, follow" />
+
+    <meta name="author" content="MOHAMED AG ABOUBACRÈNE" />
+
+    <link rel="canonical" href="https://your-domain.com/" />
+
+    <!-- Open Graph -->
+
+    <meta property="og:title" content="1v1 Games | Play Online Games" />
+
+    <meta
+      property="og:description"
+      content="Play fun 1v1 games online with friends."
+    />
+
+    <meta property="og:type" content="website" />
+
+    <meta property="og:url" content="https://your-domain.com/" />
+
+    <meta property="og:image" content="https://your-domain.com/xo.png" />
+
+    <!-- Google Font -->
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+
+    <link
+      href="https://fonts.googleapis.com/css2?family=Oxanium:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- Howler -->
+
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/howler/2.2.4/howler.min.js"
+      integrity="sha512-xi/RZRIF/S0hJ+yJJYuZ5yk6/8pCiRlEXZzoguSMl+vk2i3m6UjUO/WcZ11blRL/O+rnj94JRGwt/CHbc9+6EA=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    ></script>
+
+    <!-- Font Awesome -->
+
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.3.0/css/all.min.css"
+      integrity="sha512-ApSLB1Pd3/bZN8fWB/RG9YhN/7bd9Hkf3AGaE2mPfebjrxagjuBtx2GcgdqIlJkUzwylBo61r9Xa9NmgBI0swA=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    />
+
+    <link rel="stylesheet" href="style.css" />
+
+    <script src="script.js" defer></script>
+  </head>
+
+  <body>
+    <!-- =====================================================
+       WELCOME
+  ====================================================== -->
+
+    <section class="confirm" aria-labelledby="welcome-title">
+      <div class="logo">
+        <div class="logo-box">
+          <span class="logo-icon" aria-hidden="true"> ⚔ </span>
+
+          <p class="name-logo">1V1 GAMES</p>
+        </div>
+
+        <div class="logo-line">
+          <span class="blue"></span>
+          <span class="red"></span>
+        </div>
+      </div>
+
+      <div class="condition">
+        <h1 id="welcome-title">WELCOME!</h1>
+
+        <p>
+          By continuing to play, you confirm you agree to our
+
+          <a href="#" class="terms"> Terms of Service </a>
+
+          and
+
+          <a href="#" class="privacy"> Privacy Policy </a>.
+        </p>
+      </div>
+
+      <button id="continue" type="button">Continue</button>
+    </section>
+
+    <!-- =====================================================
+       HOME
+  ====================================================== -->
+
+    <main class="home">
+      <!-- HEADER -->
+
+      <header class="head">
+        <button
+          id="settings"
+          type="button"
+          aria-label="Open Settings"
+          title="Settings"
+        >
+          <i class="fa-solid fa-gear" aria-hidden="true"></i>
+        </button>
+
+        <div class="logo">
+          <div class="logo-box">
+            <span class="logo-icon" aria-hidden="true"> ⚔ </span>
+
+            <p class="name-logo">1V1 GAMES</p>
+          </div>
+
+          <div class="logo-line">
+            <span class="blue"></span>
+            <span class="red"></span>
+          </div>
+        </div>
+
+        <button
+          id="contact"
+          type="button"
+          aria-label="Open Contact"
+          title="Contact"
+        >
+          <i class="fa-solid fa-comment" aria-hidden="true"></i>
+        </button>
+      </header>
+
+      <!-- =====================================================
+         GAMES
+    ====================================================== -->
+
+      <section class="body" aria-label="Available games">
+        <a class="game" href="tic_tac_toe.html" aria-label="Play Tic Tac Toe">
+          <img src="xo.png" alt="Tic Tac Toe game" width="600" height="400" />
+        </a>
+
+        <a class="game" href="memory.html" aria-label="Play Memory Game">
+          <img src="memory.png" alt="Memory game" width="600" height="400" />
+        </a>
+
+        <a class="game" href="car.html" aria-label="Play Car Racing">
+          <img src="car.png" alt="Car racing game" width="600" height="400" />
+        </a>
+
+        <a class="game" href="puissance4.html" aria-label="Play Connect 4">
+          <img
+            src="connect4.png"
+            alt="Connect 4 game"
+            width="600"
+            height="400"
+          />
+        </a>
+
+        <a class="game" href="Quizz-math.html" aria-label="Play Math Quiz">
+          <img src="math.png" alt="Math quiz game" width="600" height="400" />
+        </a>
+
+        <a class="game" href="naruto.html" aria-label="Play Shinobi Runner">
+          <img
+            src="naruto.png"
+            alt="Shinobi Runner game"
+            width="600"
+            height="400"
+          />
+
+          <span class="one"> One player </span>
+        </a>
+      </section>
+    </main>
+
+    <!-- =====================================================
+       SETTINGS
+  ====================================================== -->
+
+    <div
+      class="popup"
+      id="popup_settings"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="settings-title"
+    >
+      <div class="popup-box">
+        <button class="close" type="button" aria-label="Close Settings">
+          ×
+        </button>
+
+        <h2 id="settings-title">Settings</h2>
+
+        <!-- SOUND -->
+
+        <div class="setting-item">
+          <span class="text"> Sound on </span>
+
+          <button class="sound-toggle" type="button" aria-label="Toggle sound">
+            <i class="fa-solid fa-toggle-on" aria-hidden="true"></i>
+          </button>
+        </div>
+
+        <!-- VOLUME -->
+
+        <div class="volume-box">
+          <div class="volume-title">
+            <i class="fa-solid fa-volume-high" aria-hidden="true"></i>
+
+            <h3>Volume</h3>
+          </div>
+
+          <div class="volume-control">
+            <input
+              type="range"
+              id="curseur"
+              min="0"
+              max="1"
+              value="1"
+              step="0.1"
+              aria-label="Volume"
+            />
+
+            <span id="volume-value"> 100% </span>
+          </div>
+        </div>
+
+        <!-- LINKS -->
+
+        <div class="links">
+          <span> Our </span>
+
+          <a href="#" class="terms"> Terms of Service </a>
+
+          <a href="#" class="privacy"> Privacy Policy </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- =====================================================
+       CONTACT
+  ====================================================== -->
+
+    <div
+      class="popup"
+      id="popup_contact"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="contact-title"
+    >
+      <div class="popup-box">
+        <button class="close" type="button" aria-label="Close Contact">
+          ×
+        </button>
+
+        <h2 id="contact-title">Contact</h2>
+
+        <form id="contactForm">
+          <label for="name" class="sr-only"> Name </label>
+
+          <input
+            type="text"
+            id="name"
+            name="name"
+            placeholder="Name"
+            autocomplete="name"
+            required
+          />
+
+          <label for="email" class="sr-only"> Email </label>
+
+          <input
+            type="email"
+            id="email"
+            name="email"
+            placeholder="Email"
+            autocomplete="email"
+            required
+          />
+
+          <label for="subject" class="sr-only"> Subject </label>
+
+          <input
+            type="text"
+            id="subject"
+            name="subject"
+            placeholder="Subject"
+            required
+          />
+
+          <label for="message" class="sr-only"> Message </label>
+
+          <textarea
+            id="message"
+            name="message"
+            placeholder="Message"
+            required
+          ></textarea>
+
+          <button type="submit">Send</button>
+        </form>
+      </div>
+    </div>
+
+    <!-- =====================================================
+       TERMS
+  ====================================================== -->
+
+    <article
+      class= "policy-window"
+      id="termsWindow"
+      aria-labelledby="terms-title"
+    >
+      <div class="policy-content">
+        <button
+          class="close-btn"
+          id="closeTerms"
+          type="button"
+          aria-label="Close Terms"
+        >
+          ×
+        </button>
+
+        <h2 id="terms-title">Terms of Service</h2>
+
+        <p>
+          Welcome to 1v1 Games. By using this website, you agree to these Terms
+          of Service. This application is made by MedagDev, and is intended for
+          entertainment purposes only.
+        </p>
+
+        <h3>1. Acceptance of Terms</h3>
+
+        <p>
+          By accessing or using our website, you agree to comply with these
+          terms.
+        </p>
+
+        <h3>2. User Responsibilities</h3>
+
+        <ul>
+          <li>You must use the website appropriately.</li>
+
+          <li>You must not use the service for illegal purposes.</li>
+
+          <li>You must respect other users.</li>
+
+          <li>You must not attempt to damage the website.</li>
+        </ul>
+
+        <h3>3. Intellectual Property</h3>
+
+        <p>
+          Website content, graphics, logos and software may be protected by
+          applicable intellectual property laws.
+        </p>
+
+        <h3>4. Changes</h3>
+
+        <p>We may update these terms when necessary.</p>
+      </div>
+    </article>
+
+    <!-- =====================================================
+       PRIVACY
+  ====================================================== -->
+
+    <article
+      class="policy-window"
+      id="privacyWindow"
+      aria-labelledby="privacy-title"
+    >
+      <div class="policy-content">
+        <button
+          class="close-btn"
+          id="closePrivacy"
+          type="button"
+          aria-label="Close Privacy Policy"
+        >
+          ×
+        </button>
+
+        <h2 id="privacy-title">Privacy Policy</h2>
+
+        <p>
+          Your privacy is important to us. This policy explains how information
+          may be handled when you use our website.
+        </p>
+
+        <h3>1. Information We Collect</h3>
+
+        <ul>
+          <li>Name and email address provided through the contact form.</li>
+
+          <li>Technical information such as browser type.</li>
+        </ul>
+
+        <h3>2. How We Use Information</h3>
+
+        <ul>
+          <li>Provide and improve our services.</li>
+
+          <li>Communicate with users.</li>
+
+          <li>Improve website security.</li>
+        </ul>
+
+        <h3>3. Cookies and Storage</h3>
+
+        <p>
+          The website may use browser storage to remember preferences such as
+          sound settings and acceptance of the terms.
+        </p>
+
+        <h3>4. Contact</h3>
+
+        <p>If you have questions about this policy, please contact us.</p>
+      </div>
+    </article>
+  </body>
+</html>
