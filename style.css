@@ -1,13 +1,12 @@
-/* =========================================================
-   RESET
-========================================================= */
-
-* {
+*{
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-}
+  user-select: none;
+  -webkit-tap-highlight-color: none;
+}*
 
+ 
 html {
   scroll-behavior: smooth;
 }
