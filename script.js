@@ -22,13 +22,128 @@ const sound = new Howl({
 });
 
 /* =========================================================
-   3. ETAT INITIAL
+   3. ELEMENTS SETTINGS
 ========================================================= */
 
-home.style.display = "none";
+const popupSettings = document.getElementById("popup_settings");
+const settings = document.getElementById("settings");
 
 /* =========================================================
-   4. CONTINUER
+   4. ELEMENTS CONTACT
+========================================================= */
+
+const popupContact = document.getElementById("popup_contact");
+const contact = document.getElementById("contact");
+
+/* =========================================================
+   5. ELEMENTS SON
+========================================================= */
+
+const toggle = document.querySelector(".sound-toggle i");
+const soundText = document.querySelector(".sound-toggle .text");
+
+const curseur = document.getElementById("curseur");
+const volumeValue = document.getElementById("volume-value");
+
+/* =========================================================
+   6. ETAT INITIAL
+========================================================= */
+
+if (home) {
+  home.style.display = "none";
+}
+
+/* =========================================================
+   7. ETAT DU SON
+========================================================= */
+
+/*
+  Par défaut :
+  - son activé
+  - volume à 100%
+
+  Si une préférence existe dans localStorage,
+  elle est utilisée.
+*/
+
+let soundEnabled = localStorage.getItem("son") !== "désactivé";
+
+/* =========================================================
+   8. VOLUME SAUVEGARDE
+========================================================= */
+
+const savedVolume = localStorage.getItem("volume");
+
+if (savedVolume !== null) {
+  const volume = Number(savedVolume);
+
+  sound.volume(volume);
+
+  if (curseur) {
+    curseur.value = volume;
+  }
+
+  if (volumeValue) {
+    volumeValue.textContent = Math.round(volume * 100) + "%";
+  }
+}
+
+/* =========================================================
+   9. METTRE A JOUR L'INTERFACE DU SON
+========================================================= */
+
+function updateSoundState() {
+  if (!toggle || !soundText) {
+    return;
+  }
+
+  /* ---------- SON ACTIVE ---------- */
+
+  if (soundEnabled) {
+    toggle.classList.remove("fa-toggle-off");
+    toggle.classList.add("fa-toggle-on");
+
+    soundText.textContent = "Sound on";
+
+    sound.mute(false);
+  } else {
+
+  /* ---------- SON DESACTIVE ---------- */
+    toggle.classList.remove("fa-toggle-on");
+    toggle.classList.add("fa-toggle-off");
+
+    soundText.textContent = "Sound off";
+
+    sound.mute(true);
+  }
+}
+
+/* =========================================================
+   10. DEMARRER LA MUSIQUE
+========================================================= */
+
+function startMusic() {
+  /*
+    Si le son est désactivé,
+    on ne fait absolument rien.
+  */
+
+  if (!soundEnabled) {
+    return;
+  }
+
+  /*
+    Evite de lancer plusieurs fois
+    la même musique.
+  */
+
+  if (!sound.playing()) {
+    sound.play();
+  }
+}
+
+/* =========================================================
+   11. CONTINUER
 ========================================================= */
 
 if (continuer) {
@@ -37,79 +152,83 @@ if (continuer) {
 
     localStorage.setItem("conditions", "acceptées");
 
-    confirmBox.style.display = "none";
-    home.style.display = "flex";
+    if (confirmBox) {
+      confirmBox.style.display = "none";
+    }
+
+    if (home) {
+      home.style.display = "flex";
+    }
+
+    /*
+      L'utilisateur vient de cliquer.
+      Le navigateur autorise donc normalement
+      la lecture audio.
+    */
 
     startMusic();
   });
 }
 
 /* =========================================================
-   5. VERIFICATION CONDITIONS
+   12. VERIFICATION CONDITIONS
 ========================================================= */
 
 if (localStorage.getItem("conditions") === "acceptées") {
-  confirmBox.style.display = "none";
-  home.style.display = "flex";
+  if (confirmBox) {
+    confirmBox.style.display = "none";
+  }
 
-  /*
-    Le navigateur peut bloquer la lecture automatique
-    du son. Il sera donc lancé après une interaction.
-  */
-}
-
-/* =========================================================
-   6. DEMARRER LA MUSIQUE
-========================================================= */
-
-function startMusic() {
-  if (localStorage.getItem("son") !== "désactivé") {
-    if (!sound.playing()) {
-      sound.play();
-    }
+  if (home) {
+    home.style.display = "flex";
   }
 }
 
 /* =========================================================
-   7. SETTINGS
+   13. SETTINGS
 ========================================================= */
-
-const popupSettings = document.getElementById("popup_settings");
-const settings = document.getElementById("settings");
 
 if (settings) {
   settings.addEventListener("click", () => {
-    popupSettings.style.display = "flex";
+    if (popupSettings) {
+      popupSettings.style.display = "flex";
+    }
   });
 }
 
 /* =========================================================
-   8. CONTACT
+   14. CONTACT
 ========================================================= */
-
-const popupContact = document.getElementById("popup_contact");
-const contact = document.getElementById("contact");
 
 if (contact) {
   contact.addEventListener("click", () => {
-    popupContact.style.display = "flex";
+    if (popupContact) {
+      popupContact.style.display = "flex";
+    }
   });
 }
 
 /* =========================================================
-   9. FERMETURE DES POPUPS
+   15. FERMETURE DES POPUPS
 ========================================================= */
 
 const closeButtons = document.querySelectorAll(".close");
 
 closeButtons.forEach((button) => {
   button.addEventListener("click", () => {
-    popupSettings.style.display = "none";
-    popupContact.style.display = "none";
+    if (popupSettings) {
+      popupSettings.style.display = "none";
+    }
+
+    if (popupContact) {
+      popupContact.style.display = "none";
+    }
   });
 });
 
-/* Fermer en cliquant sur le fond */
+/* =========================================================
+   16. FERMER POPUP EN CLIQUANT SUR LE FOND
+========================================================= */
 
 document.querySelectorAll(".popup").forEach((popup) => {
   popup.addEventListener("click", (event) => {
@@ -120,146 +239,153 @@ document.querySelectorAll(".popup").forEach((popup) => {
 });
 
 /* =========================================================
-   10. SON ON / OFF
+   17. SON ON / OFF
 ========================================================= */
 
-const toggle = document.querySelector(".sound-toggle i");
-const soundText = document.querySelector(".sound-toggle .text");
-
 if (toggle) {
-  toggle.addEventListener("click", () => {
-    if (toggle.classList.contains("fa-toggle-on")) {
-      toggle.classList.remove("fa-toggle-on");
-      toggle.classList.add("fa-toggle-off");
+  toggle.addEventListener("click", (event) => {
+    /*
+      Empêche le clic de remonter
+      jusqu'aux autres listeners.
+    */
 
-      soundText.textContent = "Sound off";
+    event.stopPropagation();
 
-      sound.mute(true);
+    /* Inverser l'état */
 
-      localStorage.setItem("son", "désactivé");
-    } else {
-      toggle.classList.remove("fa-toggle-off");
-      toggle.classList.add("fa-toggle-on");
+    soundEnabled = !soundEnabled;
 
-      soundText.textContent = "Sound on";
+    /* Sauvegarder */
 
-      sound.mute(false);
+    localStorage.setItem("son", soundEnabled ? "activé" : "désactivé");
 
-      localStorage.setItem("son", "activé");
+    /* Mettre à jour l'interface */
 
+    updateSoundState();
+
+    /* ---------- SON ACTIVE ---------- */
+
+    if (soundEnabled) {
       startMusic();
+    } else {
+
+    /* ---------- SON DESACTIVE ---------- */
+      /*
+        Ici on arrête réellement la musique.
+        Elle ne reste pas en arrière-plan.
+      */
+
+      sound.stop();
     }
   });
 }
 
 /* =========================================================
-   11. VOLUME
+   18. VOLUME
 ========================================================= */
-
-const curseur = document.getElementById("curseur");
-const volumeValue = document.getElementById("volume-value");
 
 if (curseur) {
   curseur.addEventListener("input", () => {
     const volume = Number(curseur.value);
 
+    /* Modifier le volume */
+
     sound.volume(volume);
 
-    volumeValue.textContent = Math.round(volume * 100) + "%";
+    /* Afficher le pourcentage */
+
+    if (volumeValue) {
+      volumeValue.textContent = Math.round(volume * 100) + "%";
+    }
+
+    /* Sauvegarder */
 
     localStorage.setItem("volume", volume);
   });
 }
 
 /* =========================================================
-   12. CHARGER LES PARAMETRES
+   19. INITIALISER LE SON
 ========================================================= */
 
-window.addEventListener("load", () => {
-  /* ---------- SON ---------- */
-
-  if (localStorage.getItem("son") === "désactivé") {
-    toggle.classList.remove("fa-toggle-on");
-    toggle.classList.add("fa-toggle-off");
-
-    soundText.textContent = "Sound off";
-
-    sound.mute(true);
-  } else {
-    toggle.classList.remove("fa-toggle-off");
-    toggle.classList.add("fa-toggle-on");
-
-    soundText.textContent = "Sound on";
-
-    sound.mute(false);
-  }
-
-  /* ---------- VOLUME ---------- */
-
-  const savedVolume = localStorage.getItem("volume");
-
-  if (savedVolume !== null) {
-    curseur.value = savedVolume;
-
-    sound.volume(Number(savedVolume));
-
-    volumeValue.textContent = Math.round(Number(savedVolume) * 100) + "%";
-  }
-});
+updateSoundState();
 
 /* =========================================================
-   13. TERMS / PRIVACY
+   20. TERMS / PRIVACY
 ========================================================= */
 
 const terms = document.querySelectorAll(".terms");
+
 const privacy = document.querySelectorAll(".privacy");
 
 const termsWindow = document.getElementById("termsWindow");
+
 const privacyWindow = document.getElementById("privacyWindow");
 
 const closeTerms = document.getElementById("closeTerms");
+
 const closePrivacy = document.getElementById("closePrivacy");
 
-/* Terms */
+/* =========================================================
+   21. TERMS
+========================================================= */
 
 terms.forEach((link) => {
   link.addEventListener("click", (event) => {
     event.preventDefault();
 
-    termsWindow.style.display = "flex";
+    if (termsWindow) {
+      termsWindow.style.display = "flex";
+    }
   });
 });
 
-/* Privacy */
+/* =========================================================
+   22. PRIVACY
+========================================================= */
 
 privacy.forEach((link) => {
   link.addEventListener("click", (event) => {
     event.preventDefault();
 
-    privacyWindow.style.display = "flex";
+    if (privacyWindow) {
+      privacyWindow.style.display = "flex";
+    }
   });
 });
 
-/* Fermer Terms */
+/* =========================================================
+   23. FERMER TERMS
+========================================================= */
 
 if (closeTerms) {
   closeTerms.addEventListener("click", () => {
-    termsWindow.style.display = "none";
+    if (termsWindow) {
+      termsWindow.style.display = "none";
+    }
   });
 }
 
-/* Fermer Privacy */
+/* =========================================================
+   24. FERMER PRIVACY
+========================================================= */
 
 if (closePrivacy) {
   closePrivacy.addEventListener("click", () => {
-    privacyWindow.style.display = "none";
+    if (privacyWindow) {
+      privacyWindow.style.display = "none";
+    }
   });
 }
 
-/* Fermer en cliquant dehors */
+/* =========================================================
+   25. FERMER TERMS / PRIVACY EN CLIQUANT DEHORS
+========================================================= */
 
 [termsWindow, privacyWindow].forEach((windowBox) => {
-  if (!windowBox) return;
+  if (!windowBox) {
+    return;
+  }
 
   windowBox.addEventListener("click", (event) => {
     if (event.target === windowBox) {
@@ -269,7 +395,7 @@ if (closePrivacy) {
 });
 
 /* =========================================================
-   14. CONTACT FORM
+   26. CONTACT FORM
 ========================================================= */
 
 const contactForm = document.getElementById("contactForm");
@@ -278,53 +404,84 @@ if (contactForm) {
   contactForm.addEventListener("submit", (event) => {
     event.preventDefault();
 
+    /* ---------- INPUTS ---------- */
+
     const nameInput = document.getElementById("name");
+
     const emailInput = document.getElementById("email");
+
     const subjectInput = document.getElementById("subject");
+
     const messageInput = document.getElementById("message");
 
+    /* ---------- VALEURS ---------- */
+
     const name = nameInput.value.trim();
+
     const email = emailInput.value.trim();
+
     const subject = subjectInput.value.trim();
+
     const message = messageInput.value.trim();
+
+    /* ---------- CHAMPS VIDES ---------- */
 
     if (!name || !email || !subject || !message) {
       alert("Veuillez remplir tous les champs.");
+
       return;
     }
 
+    /* ---------- EMAIL ---------- */
+
     if (!emailInput.checkValidity()) {
       alert("Veuillez entrer une adresse e-mail valide.");
+
       emailInput.focus();
 
       return;
     }
 
+    /* ---------- CONTENU ---------- */
+
     const emailBody =
       `Nom : ${name}\n` + `Email : ${email}\n\n` + `Message :\n${message}`;
+
+    /* ---------- MAILTO ---------- */
 
     const mailto =
       `mailto:medagdev@outlook.com` +
       `?subject=${encodeURIComponent(subject)}` +
       `&body=${encodeURIComponent(emailBody)}`;
 
+    /* ---------- OUVRIR EMAIL ---------- */
+
     window.location.href = mailto;
   });
 }
 
 /* =========================================================
-   15. DEMARRER LE SON APRES UNE INTERACTION
+   27. DEMARRER LE SON APRES UNE INTERACTION
 ========================================================= */
+
+/*
+  IMPORTANT :
+
+  Ce listener ne relance pas la musique
+  si l'utilisateur vient de la couper.
+
+  Il sert uniquement à permettre au navigateur
+  de démarrer la musique après une interaction.
+*/
 
 document.addEventListener(
   "click",
   () => {
-    if (
-      localStorage.getItem("conditions") === "acceptées" &&
-      localStorage.getItem("son") !== "désactivé"
-    ) {
+    if (localStorage.getItem("conditions") === "acceptées" && soundEnabled) {
       startMusic();
     }
   },
-  { once: true },
+  {
+    once: true,
+  },
 );
