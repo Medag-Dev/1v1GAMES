@@ -1009,16 +1009,6 @@ form button[type="submit"]:hover {
     padding: 82px 10px 20px;
   }
 
-  .game {
-    aspect-ratio: 16 / 10;
-
-    border-radius: 12px;
-  }
-
-  .game img {
-    border-radius: 12px;
-  }
-
   .one {
     top: 7px;
     right: 7px;
