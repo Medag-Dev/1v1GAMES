@@ -1,0 +1,2370 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="description" content="Jeu d'échecs Chess">
+    <title>Chess</title>
+
+    <link
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
+    >
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.3/chess.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/howler/2.2.4/howler.min.js"></script>
+    <script src="score.js"></script>
+    <style>
+        /* --- BOUTON RETOUR --- */
+#exit {
+    position: fixed;
+    top: 0.5%;
+    left: 0;
+    transform: translateY(-0.5%);
+    width: 55px;
+    height: 50px;
+    padding: 0;
+    border: none;
+    border-radius: 0 30px 30px 0;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-left: none;
+    color: #fff;
+    font-size: 22px;
+    cursor: pointer;
+    z-index: 10000;
+    transition: all 0.2s ease;
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+}
+
+#exit:active {
+    transform: translateY(-0.5%) scale(0.95);
+    background: rgba(255, 255, 255, 0.25);
+}
+
+/* --- ECRANS DE VICTOIRE --- */
+.blue_wins,
+.red_wins {
+    position: fixed;
+    inset: 0;
+    z-index: 100000;
+    display: none;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    font-size: clamp(35px, 8vw, 70px);
+    font-weight: 900;
+    color: white;
+    backdrop-filter: blur(15px);
+    text-align: center;
+    text-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    animation: winPop 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+@keyframes winPop {
+    from { transform: scale(0.8); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+}
+
+.blue_wins {
+    background: radial-gradient(circle, rgba(0, 102, 255, 0.95), rgba(5, 15, 40, 0.98));
+    box-shadow: inset 0 0 100px #00d9ff;
+}
+
+.red_wins {
+    background: radial-gradient(circle, rgba(255, 0, 81, 0.95), rgba(40, 5, 15, 0.98));
+    box-shadow: inset 0 0 100px #ff0055;
+}
+
+.blue_wins i, .red_wins i {
+    margin-top: 15px;
+    color: #ffd700;
+    filter: drop-shadow(0 0 15px rgba(255, 215, 0, 0.8));
+    animation: floatCrown 2s infinite ease-in-out;
+}
+
+@keyframes floatCrown {
+    0%, 100% { transform: translateY(0) rotate(0deg); }
+    50% { transform: translateY(-15px) rotate(5deg); }
+}
+
+
+* {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+
+            user-select: none;
+            -webkit-user-select: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        :root {
+
+            --bg: #312e2b;
+            --panel: #262421;
+            --panel-border: rgba(255,255,255,.09);
+
+            --text: #fff;
+            --muted: #b3b3b3;
+
+            --board-light: #f0d9b5;
+            --board-dark: #b58863;
+
+            --red: #e04444;
+            --red-dark: #a92525;
+
+            --blue: #4387f5;
+            --blue-dark: #2458a8;
+
+            --selected: rgba(255,215,0,.72);
+            --possible: rgba(0,0,0,.30);
+        }
+
+
+        html,
+        body {
+
+            width: 100%;
+            height: 100%;
+
+            margin: 0;
+
+            background: var(--bg);
+            color: var(--text);
+        }
+
+
+        body {
+
+            min-height: 100dvh;
+
+            overflow: hidden;
+
+            touch-action: manipulation;
+
+            display: flex;
+
+            align-items: center;
+            justify-content: center;
+        }
+
+
+        button {
+            font: inherit;
+        }
+
+
+        /* =========================================================
+           PAGE JEU
+        ========================================================= */
+
+        #gamePage {
+
+            width: 100%;
+            height: 100dvh;
+
+            display: flex;
+
+            align-items: center;
+            justify-content: center;
+
+            overflow: hidden;
+        }
+
+
+        .chess-page {
+
+            width: 100%;
+            height: 100%;
+
+            max-width: 1280px;
+
+            padding: 12px;
+
+            display: flex;
+
+            align-items: center;
+            justify-content: center;
+        }
+
+
+        .game {
+
+            width: 100%;
+            height: 100%;
+
+            max-height: calc(100dvh - 24px);
+
+            display: grid;
+
+            grid-template-columns:
+                minmax(
+                    0,
+                    min(760px, calc(100dvh - 24px))
+                )
+                minmax(220px, 300px);
+
+            gap: 18px;
+
+            align-items: center;
+            justify-content: center;
+        }
+
+
+        /* =========================================================
+           PLATEAU
+        ========================================================= */
+
+        .board-container {
+
+            width: 100%;
+
+            min-width: 0;
+
+            display: flex;
+
+            align-items: center;
+            justify-content: center;
+        }
+
+
+        #board {
+
+            width: min(
+                100%,
+                760px,
+                calc(100dvh - 24px)
+            );
+
+            aspect-ratio: 1 / 1;
+
+            display: grid;
+
+            grid-template-columns:
+                repeat(8, minmax(0, 1fr));
+
+            grid-template-rows:
+                repeat(8, minmax(0, 1fr));
+
+            overflow: hidden;
+
+            border: 2px solid rgba(0,0,0,.28);
+
+            border-radius: 4px;
+
+            box-shadow:
+                0 14px 38px rgba(0,0,0,.46),
+                0 2px 8px rgba(0,0,0,.25);
+
+            background: var(--board-dark);
+
+            contain: strict;
+        }
+
+
+        .case {
+
+            position: relative;
+
+            width: 100%;
+            height: 100%;
+
+            min-width: 0;
+            min-height: 0;
+
+            display: flex;
+
+            align-items: center;
+            justify-content: center;
+
+            overflow: hidden;
+
+            cursor: pointer;
+        }
+
+
+        .clair {
+            background: var(--board-light);
+        }
+
+
+        .fonce {
+            background: var(--board-dark);
+        }
+
+
+        .case.selected {
+
+            background:
+                var(--selected) !important;
+        }
+
+
+        /* =========================================================
+           PIÈCES FONT AWESOME
+        ========================================================= */
+
+        .chess-piece-icon {
+
+            position: absolute;
+
+            z-index: 2;
+
+            width: 76%;
+            height: 76%;
+
+            max-width: 76%;
+            max-height: 76%;
+
+            display: flex;
+
+            align-items: center;
+            justify-content: center;
+
+            font-size:
+                clamp(
+                    26px,
+                    min(5.5vw, 5.5vh),
+                    58px
+                );
+
+            line-height: 1;
+
+            pointer-events: none;
+
+            overflow: hidden;
+
+            transform-origin: center;
+
+            transition:
+                transform .12s ease,
+                filter .12s ease;
+        }
+
+
+        /* Pièces du joueur Rouge */
+
+        .piece-red {
+
+            color: var(--red);
+
+            text-shadow:
+                0 1px 0 rgba(255,255,255,.25),
+                0 2px 3px rgba(0,0,0,.65),
+                0 4px 8px rgba(0,0,0,.28);
+        }
+
+
+        /* Pièces du joueur Bleu */
+
+        .piece-blue {
+
+            color: var(--blue);
+
+            text-shadow:
+                0 1px 0 rgba(255,255,255,.22),
+                0 2px 3px rgba(0,0,0,.65),
+                0 4px 8px rgba(0,0,0,.28);
+        }
+
+
+        /* =========================================================
+           COUPS POSSIBLES
+        ========================================================= */
+
+        .possible::after {
+
+            content: "";
+
+            position: absolute;
+
+            left: 50%;
+            top: 50%;
+
+            width: 24%;
+            height: 24%;
+
+            transform:
+                translate(-50%, -50%);
+
+            border-radius: 50%;
+
+            background:
+                var(--possible);
+
+            z-index: 5;
+
+            pointer-events: none;
+        }
+
+
+        .possible.has-piece::after {
+
+            inset: 8%;
+
+            width: auto;
+            height: auto;
+
+            transform: none;
+
+            border-radius: 0;
+
+            background: transparent;
+
+            border:
+                3px solid var(--possible);
+        }
+
+
+        /* =========================================================
+           COORDONNÉES
+        ========================================================= */
+
+        .coord {
+
+            position: absolute;
+
+            z-index: 10;
+
+            font-size:
+                clamp(
+                    7px,
+                    1.2vw,
+                    13px
+                );
+
+            line-height: 1;
+
+            font-weight: 800;
+
+            pointer-events: none;
+        }
+
+
+        .file {
+
+            right: 4%;
+            bottom: 3%;
+        }
+
+
+        .rank {
+
+            left: 4%;
+            top: 3%;
+        }
+
+
+        .clair .coord {
+
+            color:
+                var(--board-dark);
+        }
+
+
+        .fonce .coord {
+
+            color:
+                var(--board-light);
+        }
+
+
+        /* =========================================================
+           JOUEURS
+        ========================================================= */
+
+        .players {
+
+            min-width: 0;
+
+            display: flex;
+
+            flex-direction: column;
+
+            gap: 12px;
+        }
+
+
+        .player {
+
+            width: 100%;
+
+            min-width: 0;
+
+            min-height: 76px;
+
+            padding: 12px 14px;
+
+            border-radius: 11px;
+
+            background:
+                var(--panel);
+
+            border:
+                1px solid var(--panel-border);
+
+            display: flex;
+
+            align-items: center;
+            justify-content: flex-start;
+
+            position: relative;
+
+            overflow: hidden;
+        }
+
+
+        .player::before {
+
+            content: "";
+
+            width: 4px;
+
+            position: absolute;
+
+            inset:
+                0 auto 0 0;
+        }
+
+
+        .red-player::before {
+
+            background:
+                var(--red);
+        }
+
+
+        .blue-player::before {
+
+            background:
+                var(--blue);
+        }
+
+
+        .player-info {
+
+            min-width: 0;
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 9px;
+        }
+
+
+        .player-icon {
+
+            width: 36px;
+            height: 36px;
+
+            flex: 0 0 36px;
+
+            border-radius: 50%;
+
+            display: flex;
+
+            align-items: center;
+            justify-content: center;
+
+            color: #fff;
+
+            font-size: 18px;
+
+            font-weight: 800;
+        }
+
+
+        .red-icon {
+
+            background:
+                var(--red);
+        }
+
+
+        .blue-icon {
+
+            background:
+                var(--blue);
+        }
+
+
+        .player-name-wrap {
+
+            min-width: 0;
+        }
+
+
+        .player-name {
+
+            display: block;
+
+            font-size: 15px;
+
+            font-weight: 800;
+
+            white-space: nowrap;
+        }
+
+
+        .assigned-color {
+
+            display: block;
+
+            margin-top: 2px;
+
+            color:
+                var(--muted);
+
+            font-size: 11px;
+
+            white-space: nowrap;
+        }
+
+
+        .winner {
+
+            display: none;
+
+            margin-left: auto;
+
+            flex: 0 0 auto;
+
+            padding: 5px 7px;
+
+            border-radius: 6px;
+
+            background: #f0c420;
+
+            color: #211f1c;
+
+            font-size: 11px;
+
+            font-weight: 900;
+
+            white-space: nowrap;
+        }
+
+
+        .player.winner-player .winner {
+
+            display: block;
+        }
+
+
+        /* =========================================================
+           PROMOTION
+        ========================================================= */
+
+        .modal-overlay {
+
+            position: fixed;
+
+            inset: 0;
+
+            z-index: 1000;
+
+            display: none;
+
+            align-items: center;
+            justify-content: center;
+
+            padding: 20px;
+
+            background:
+                rgba(0,0,0,.82);
+        }
+
+
+        .modal-overlay.active {
+
+            display: flex;
+        }
+
+
+        .promotion-content {
+
+            width:
+                min(90vw, 340px);
+
+            padding: 22px;
+
+            border-radius: 12px;
+
+            background:
+                var(--panel);
+
+            border:
+                1px solid var(--panel-border);
+
+            text-align: center;
+        }
+
+
+        .promotion-content h3 {
+
+            font-size: 18px;
+
+            margin-bottom: 15px;
+        }
+
+
+        .promotion-choices {
+
+            display: flex;
+
+            justify-content: center;
+
+            gap: 10px;
+        }
+
+
+        .promotion-choices button {
+
+            width: 58px;
+            height: 58px;
+
+            border: 0;
+
+            border-radius: 8px;
+
+            background: #3a3836;
+
+            color: #fff;
+
+            font-size: 34px;
+
+            cursor: pointer;
+        }
+
+
+        .promotion-choices button:hover {
+
+            background:
+                #4b4845;
+        }
+
+
+        .promotion-choices button i {
+
+            pointer-events: none;
+        }
+
+
+        /* =========================================================
+           RESPONSIVE
+        ========================================================= */
+
+        @media (max-width: 930px) {
+
+            body {
+                overflow: hidden;
+            }
+
+
+            #gamePage {
+
+                overflow-y: auto;
+                overflow-x: hidden;
+
+                align-items: flex-start;
+            }
+
+
+            .chess-page {
+
+                height: auto;
+
+                min-height: 100dvh;
+
+                padding: 8px;
+            }
+
+
+            .game {
+
+                width:
+                    min(100%, 760px);
+
+                height: auto;
+
+                max-height: none;
+
+                display: grid;
+
+                grid-template-columns: 1fr;
+
+                gap: 10px;
+            }
+
+
+            .board-container {
+
+                grid-column: 1;
+                grid-row: 1;
+            }
+
+
+            #board {
+
+                width:
+                    min(
+                        100%,
+                        760px,
+                        calc(100vw - 16px)
+                    );
+            }
+
+
+            .players {
+
+                grid-column: 1;
+                grid-row: 2;
+
+                display: grid;
+
+                grid-template-columns:
+                    1fr 1fr;
+
+                gap: 8px;
+            }
+
+
+            .player {
+
+                min-height: 62px;
+            }
+
+
+            .chess-piece-icon {
+
+                font-size:
+                    clamp(
+                        24px,
+                        8vw,
+                        52px
+                    );
+            }
+        }
+
+
+        /* =========================================================
+           PETITS ÉCRANS
+        ========================================================= */
+
+        @media (max-width: 520px) {
+
+            .chess-page {
+
+                padding: 4px;
+            }
+
+
+            .game {
+
+                gap: 7px;
+            }
+
+
+            #board {
+
+                width:
+                    calc(100vw - 8px);
+            }
+
+
+            .players {
+
+                gap: 5px;
+            }
+
+
+            .player {
+
+                min-height: 52px;
+
+                padding: 6px 8px;
+
+                border-radius: 7px;
+            }
+
+
+            .player-info {
+
+                gap: 5px;
+            }
+
+
+            .player-icon {
+
+                width: 27px;
+                height: 27px;
+
+                flex-basis: 27px;
+
+                font-size: 13px;
+            }
+
+
+            .player-name {
+
+                font-size: 11px;
+            }
+
+
+            .assigned-color {
+
+                font-size: 9px;
+            }
+
+
+            .chess-piece-icon {
+
+                width: 80%;
+                height: 80%;
+
+                max-width: 80%;
+                max-height: 80%;
+
+                font-size:
+                    clamp(
+                        20px,
+                        9vw,
+                        43px
+                    );
+            }
+
+
+            .possible.has-piece::after {
+
+                border-width: 2px;
+            }
+        }
+
+
+        /* =========================================================
+           TRÈS PETITS ÉCRANS
+        ========================================================= */
+
+        @media (max-width: 350px) {
+
+            .player {
+
+                padding: 5px;
+            }
+
+
+            .player-name {
+
+                font-size: 10px;
+            }
+
+
+            .assigned-color {
+
+                font-size: 8px;
+            }
+
+
+            .player-icon {
+
+                width: 23px;
+                height: 23px;
+
+                flex-basis: 23px;
+
+                font-size: 11px;
+            }
+
+
+            .winner {
+
+                display: none !important;
+            }
+        }
+
+
+        /* =========================================================
+           MODE PAYSAGE
+        ========================================================= */
+
+        @media (max-width: 930px)
+        and (orientation: landscape) {
+
+            #gamePage {
+
+                overflow: hidden;
+            }
+
+
+            .chess-page {
+
+                width: 100%;
+                height: 100dvh;
+
+                padding: 5px;
+            }
+
+
+            .game {
+
+                width: 100%;
+                height: 100%;
+
+                grid-template-columns:
+                    minmax(0, 1fr)
+                    190px;
+
+                gap: 8px;
+
+                align-items: center;
+            }
+
+
+            .board-container {
+
+                grid-column: 1;
+                grid-row: 1;
+            }
+
+
+            #board {
+
+                width:
+                    min(
+                        calc(100dvh - 10px),
+                        calc(100vw - 205px)
+                    );
+            }
+
+
+            .players {
+
+                grid-column: 2;
+                grid-row: 1;
+
+                display: flex;
+
+                flex-direction: column;
+
+                gap: 7px;
+            }
+
+
+            .player {
+
+                min-height: 54px;
+            }
+        }
+
+    </style>
+</head>
+
+
+<body>
+
+
+    <!-- =========================================================
+         JEU
+    ========================================================= -->
+
+    <div id="gamePage">
+
+        <div class="chess-page">
+
+            <main class="game">
+
+
+                <!-- =================================================
+                     PLATEAU
+                ================================================= -->
+
+                <div class="board-container">
+
+                    <div id="board"></div>
+
+                </div>
+
+
+                <!-- =================================================
+                     JOUEURS
+                ================================================= -->
+
+                <div class="players">
+
+
+                    <!-- JOUEUR ROUGE -->
+
+                    <section
+                        class="player red-player"
+                        id="player-red"
+                    >
+
+                        <div class="player-info">
+
+                            <div class="player-icon red-icon">
+
+                                <i class="fa-solid fa-chess-king"></i>
+
+                            </div>
+
+
+                            <div class="player-name-wrap">
+
+                                <span class="player-name">
+                                    Joueur Rouge
+                                </span>
+
+                                <span class="assigned-color">
+                                    Pièces rouges
+                                </span>
+
+                            </div>
+
+                        </div>
+
+
+                        <span
+                            class="winner"
+                            id="redWinner"
+                        >
+                            GAGNE
+                        </span>
+
+                    </section>
+
+
+                    <!-- JOUEUR BLEU -->
+
+                    <section
+                        class="player blue-player"
+                        id="player-blue"
+                    >
+
+                        <div class="player-info">
+
+                            <div class="player-icon blue-icon">
+
+                                <i class="fa-solid fa-chess-king"></i>
+
+                            </div>
+
+
+                            <div class="player-name-wrap">
+
+                                <span class="player-name">
+                                    Joueur Bleu
+                                </span>
+
+                                <span class="assigned-color">
+                                    Pièces bleues
+                                </span>
+
+                            </div>
+
+                        </div>
+
+
+                        <span
+                            class="winner"
+                            id="blueWinner"
+                        >
+                            GAGNE
+                        </span>
+
+                    </section>
+
+
+                </div>
+
+            </main>
+
+        </div>
+
+    </div>
+
+
+    <!-- =========================================================
+         PROMOTION
+    ========================================================= -->
+
+    <div
+        id="promotionBox"
+        class="modal-overlay"
+    >
+
+        <div class="promotion-content">
+
+            <h3>
+                Promotion du pion
+            </h3>
+
+
+            <div class="promotion-choices">
+
+
+                <button
+                    data-piece="q"
+                    title="Dame"
+                >
+
+                    <i class="fa-solid fa-chess-queen"></i>
+
+                </button>
+
+
+                <button
+                    data-piece="r"
+                    title="Tour"
+                >
+
+                    <i class="fa-solid fa-chess-rook"></i>
+
+                </button>
+
+
+                <button
+                    data-piece="b"
+                    title="Fou"
+                >
+
+                    <i class="fa-solid fa-chess-bishop"></i>
+
+                </button>
+
+
+                <button
+                    data-piece="n"
+                    title="Cavalier"
+                >
+
+                    <i class="fa-solid fa-chess-knight"></i>
+
+                </button>
+
+
+            </div>
+
+        </div>
+
+    </div>
+
+       <button id="exit" onclick="history.back()">
+        <i class="fa-solid fa-arrow-left"></i>
+    </button>
+
+    <div class="red_wins">
+        <p>
+            RED WINS
+            <br>
+            <i class="fa-solid fa-crown"></i>
+        </p>
+    </div>
+
+    <div class="blue_wins">
+        <p>
+            BLUE WINS
+            <br>
+            <i class="fa-solid fa-crown"></i>
+        </p>
+    </div>
+
+    <script>
+
+        "use strict";
+
+
+        /* =========================================================
+           VARIABLES
+        ========================================================= */
+
+        const board =
+            document.getElementById("board");
+
+        const gamePage =
+            document.getElementById("gamePage");
+
+        const game =
+            new Chess();
+
+
+        let selected = null;
+
+        let legalMoves = [];
+
+
+        let promotionFrom = null;
+
+        let promotionTo = null;
+
+
+        let piecesFlipped = false;
+
+        let gameStarted = true;
+
+        let gameFinished = false;
+
+
+        /*
+         * Couleurs fixes :
+         *
+         * BLANC de chess.js = ROUGE
+         * NOIR de chess.js   = BLEU
+         */
+
+        const whitePlayer = "red";
+
+        const blackPlayer = "blue";
+
+
+        /* =========================================================
+           DÉMARRAGE DIRECT
+        ========================================================= */
+
+        gamePage.classList.add("started");
+
+
+        /* =========================================================
+           PIÈCES
+        ========================================================= */
+
+        function piece(
+            faClass,
+            colorClass
+        ) {
+
+            return `
+                <i
+                    class="fa-solid ${faClass} chess-piece-icon ${colorClass}"
+                    aria-hidden="true">
+                </i>
+            `;
+        }
+
+
+        /*
+         * PIÈCES ROUGES
+         */
+
+        const w_k =
+            piece(
+                "fa-chess-king",
+                "piece-red"
+            );
+
+        const w_q =
+            piece(
+                "fa-chess-queen",
+                "piece-red"
+            );
+
+        const w_r =
+            piece(
+                "fa-chess-rook",
+                "piece-red"
+            );
+
+        const w_b =
+            piece(
+                "fa-chess-bishop",
+                "piece-red"
+            );
+
+        const w_n =
+            piece(
+                "fa-chess-knight",
+                "piece-red"
+            );
+
+        const w_p =
+            piece(
+                "fa-chess-pawn",
+                "piece-red"
+            );
+
+
+        /*
+         * PIÈCES BLEUES
+         */
+
+        const b_k =
+            piece(
+                "fa-chess-king",
+                "piece-blue"
+            );
+
+        const b_q =
+            piece(
+                "fa-chess-queen",
+                "piece-blue"
+            );
+
+        const b_r =
+            piece(
+                "fa-chess-rook",
+                "piece-blue"
+            );
+
+        const b_b =
+            piece(
+                "fa-chess-bishop",
+                "piece-blue"
+            );
+
+        const b_n =
+            piece(
+                "fa-chess-knight",
+                "piece-blue"
+            );
+
+        const b_p =
+            piece(
+                "fa-chess-pawn",
+                "piece-blue"
+            );
+
+
+        const pieces = {
+
+            w: {
+
+                k: w_k,
+                q: w_q,
+                r: w_r,
+                b: w_b,
+                n: w_n,
+                p: w_p
+
+            },
+
+
+            b: {
+
+                k: b_k,
+                q: b_q,
+                r: b_r,
+                b: b_b,
+                n: b_n,
+                p: b_p
+
+            }
+
+        };
+
+
+        /* =========================================================
+           SONS
+        ========================================================= */
+
+        const moveSound =
+            new Howl({
+
+                src: ["move.mp3"],
+
+                volume: 1
+
+            });
+
+
+        const captureSound =
+            new Howl({
+
+                src: ["capture.mp3"],
+
+                volume: 1
+
+            });
+
+
+        const checkSound =
+            new Howl({
+
+                src: ["check.mp3"],
+
+                volume: 1
+
+            });
+
+
+        const castleSound =
+            new Howl({
+
+                src: ["castle.mp3"],
+
+                volume: 1
+
+            });
+
+
+        const promoteSound =
+            new Howl({
+
+                src: ["promote.mp3"],
+
+                volume: 1
+
+            });
+
+
+        const illegalSound =
+            new Howl({
+
+                src: ["illegal.mp3"],
+
+                volume: 1
+
+            });
+
+
+        const mateSound =
+            new Howl({
+
+                src: ["mate.mp3"],
+
+                volume: 1
+
+            });
+
+
+        /* =========================================================
+           CRÉATION DU PLATEAU
+        ========================================================= */
+
+        function createBoard() {
+
+            board.innerHTML = "";
+
+
+            const position =
+                game.board();
+
+
+            for (
+                let row = 0;
+                row < 8;
+                row++
+            ) {
+
+
+                for (
+                    let col = 0;
+                    col < 8;
+                    col++
+                ) {
+
+
+                    const square =
+                        document.createElement("div");
+
+
+                    square.className =
+                        "case";
+
+
+                    if (
+                        (row + col) % 2 === 0
+                    ) {
+
+                        square.classList.add(
+                            "clair"
+                        );
+
+                    } else {
+
+                        square.classList.add(
+                            "fonce"
+                        );
+                    }
+
+
+                    const currentPiece =
+                        position[row][col];
+
+
+                    if (currentPiece) {
+
+                        square.innerHTML =
+                            pieces[
+                                currentPiece.color
+                            ][
+                                currentPiece.type
+                            ];
+                    }
+
+
+                    const file =
+                        String.fromCharCode(
+                            97 + col
+                        );
+
+
+                    const rank =
+                        8 - row;
+
+
+                    square.dataset.square =
+                        file + rank;
+
+
+                    /*
+                     * Lettres
+                     */
+
+                    if (row === 7) {
+
+                        const letter =
+                            document.createElement(
+                                "span"
+                            );
+
+
+                        letter.className =
+                            "coord file";
+
+
+                        letter.textContent =
+                            file;
+
+
+                        square.appendChild(
+                            letter
+                        );
+                    }
+
+
+                    /*
+                     * Chiffres
+                     */
+
+                    if (col === 0) {
+
+                        const number =
+                            document.createElement(
+                                "span"
+                            );
+
+
+                        number.className =
+                            "coord rank";
+
+
+                        number.textContent =
+                            rank;
+
+
+                        square.appendChild(
+                            number
+                        );
+                    }
+
+
+                    square.addEventListener(
+                        "click",
+                        clickSquare
+                    );
+
+
+                    board.appendChild(
+                        square
+                    );
+                }
+            }
+
+
+            applyPieceRotation();
+        }
+
+
+        /* =========================================================
+           CLIC CASE
+        ========================================================= */
+
+        function clickSquare(event) {
+
+            if (
+                !gameStarted ||
+                gameFinished
+            ) {
+
+                return;
+            }
+
+
+            const element =
+                event.currentTarget;
+
+
+            const square =
+                element.dataset.square;
+
+
+            /*
+             * Une pièce est sélectionnée
+             */
+
+            if (selected) {
+
+                const move =
+                    legalMoves.find(
+                        m => m.to === square
+                    );
+
+
+                /*
+                 * Coup légal
+                 */
+
+                if (move) {
+
+                    makeMove(
+                        selected,
+                        square
+                    );
+
+
+                    clearSelection();
+
+                    return;
+                }
+
+
+                /*
+                 * Nouvelle pièce amie
+                 */
+
+                const newPiece =
+                    game.get(square);
+
+
+                if (
+                    newPiece &&
+                    newPiece.color ===
+                        game.turn()
+                ) {
+
+                    clearSelection();
+
+
+                    element.classList.add(
+                        "selected"
+                    );
+
+
+                    selected =
+                        square;
+
+
+                    showMoves(
+                        square
+                    );
+
+
+                    return;
+                }
+
+
+                /*
+                 * Coup illégal
+                 */
+
+                illegalSound.stop();
+
+                illegalSound.play();
+
+
+                clearSelection();
+
+                return;
+            }
+
+
+            /*
+             * Première sélection
+             */
+
+            const currentPiece =
+                game.get(square);
+
+
+            if (
+                currentPiece &&
+                currentPiece.color ===
+                    game.turn()
+            ) {
+
+                element.classList.add(
+                    "selected"
+                );
+
+
+                selected =
+                    square;
+
+
+                showMoves(
+                    square
+                );
+            }
+        }
+
+
+        /* =========================================================
+           COUPS POSSIBLES
+        ========================================================= */
+
+        function showMoves(square) {
+
+            clearPoints();
+
+
+            legalMoves =
+                game.moves({
+
+                    square: square,
+
+                    verbose: true
+
+                });
+
+
+            legalMoves.forEach(
+                move => {
+
+                    const target =
+                        document.querySelector(
+                            `[data-square="${move.to}"]`
+                        );
+
+
+                    if (target) {
+
+                        target.classList.add(
+                            "possible"
+                        );
+
+
+                        if (
+                            game.get(
+                                move.to
+                            )
+                        ) {
+
+                            target.classList.add(
+                                "has-piece"
+                            );
+                        }
+                    }
+                }
+            );
+        }
+
+
+        /* =========================================================
+           NETTOYAGE
+        ========================================================= */
+
+        function clearPoints() {
+
+            document
+                .querySelectorAll(
+                    ".possible"
+                )
+                .forEach(
+                    element => {
+
+                        element.classList.remove(
+                            "possible"
+                        );
+
+
+                        element.classList.remove(
+                            "has-piece"
+                        );
+
+                    }
+                );
+        }
+
+
+        function clearSelection() {
+
+            if (selected) {
+
+                const element =
+                    document.querySelector(
+                        `[data-square="${selected}"]`
+                    );
+
+
+                if (element) {
+
+                    element.classList.remove(
+                        "selected"
+                    );
+                }
+            }
+
+
+            selected = null;
+
+            legalMoves = [];
+
+
+            clearPoints();
+        }
+
+
+        /* =========================================================
+           JOUER UN COUP
+        ========================================================= */
+
+        function makeMove(
+            from,
+            to
+        ) {
+
+            if (gameFinished) {
+
+                return;
+            }
+
+
+            const currentPiece =
+                game.get(from);
+
+
+            /*
+             * Promotion
+             */
+
+            if (
+                currentPiece &&
+                currentPiece.type === "p" &&
+                (
+                    to[1] === "8" ||
+                    to[1] === "1"
+                )
+            ) {
+
+                promotionFrom =
+                    from;
+
+
+                promotionTo =
+                    to;
+
+
+                document
+                    .getElementById(
+                        "promotionBox"
+                    )
+                    .classList.add(
+                        "active"
+                    );
+
+
+                return;
+            }
+
+
+            const captured =
+                game.get(to);
+
+
+            const move =
+                game.move({
+
+                    from: from,
+
+                    to: to
+
+                });
+
+
+            if (!move) {
+
+                return;
+            }
+
+
+            playMoveSound(
+                move,
+                captured
+            );
+
+
+            createBoard();
+
+
+            /*
+             * Conservation du comportement
+             * d'orientation existant.
+             */
+
+            rotatePieces();
+
+
+            checkStatus();
+        }
+
+
+        function playMoveSound(
+            move,
+            captured
+        ) {
+
+            if (
+                move.flags.includes("k") ||
+                move.flags.includes("q")
+            ) {
+
+                castleSound.play();
+
+            }
+
+            else if (
+                captured ||
+                move.flags.includes("e")
+            ) {
+
+                captureSound.play();
+
+            }
+
+            else {
+
+                moveSound.play();
+            }
+        }
+
+
+        /* =========================================================
+           PROMOTION
+        ========================================================= */
+
+        document
+            .querySelectorAll(
+                "#promotionBox button"
+            )
+            .forEach(
+                button => {
+
+                    button.addEventListener(
+                        "click",
+                        function () {
+
+                            if (gameFinished) {
+
+                                return;
+                            }
+
+
+                            const promotion =
+                                this.dataset.piece;
+
+
+                            const move =
+                                game.move({
+
+                                    from:
+                                        promotionFrom,
+
+                                    to:
+                                        promotionTo,
+
+                                    promotion:
+                                        promotion
+
+                                });
+
+
+                            if (!move) {
+
+                                return;
+                            }
+
+
+                            document
+                                .getElementById(
+                                    "promotionBox"
+                                )
+                                .classList.remove(
+                                    "active"
+                                );
+
+
+                            promotionFrom =
+                                null;
+
+
+                            promotionTo =
+                                null;
+
+
+                            moveSound.stop();
+
+                            captureSound.stop();
+
+                            promoteSound.play();
+
+
+                            createBoard();
+
+
+                            rotatePieces();
+
+
+                            checkStatus();
+
+                        }
+                    );
+                }
+            );
+
+
+        /* =========================================================
+           FIN DE PARTIE
+        ========================================================= */
+
+        function checkStatus() {
+
+            /*
+             * Échec et mat
+             */
+
+            if (
+                game.in_checkmate()
+            ) {
+
+                gameFinished = true;
+
+
+                moveSound.stop();
+
+                captureSound.stop();
+
+
+                checkSound.play();
+
+                mateSound.play();
+
+
+                const winnerChessColor =
+                    game.turn() === "w"
+                        ? "b"
+                        : "w";
+
+
+                const winnerPlayer =
+                    winnerChessColor === "w"
+                        ? whitePlayer
+                        : blackPlayer;
+
+
+                showWinner(
+                    winnerPlayer
+                );
+
+
+                /*
+                 * Fonctions conservées
+                 * depuis le reste du projet.
+                 */
+
+                if (
+                    winnerPlayer === "red"
+                ) {
+
+                    xWins();
+
+                }
+
+                else {
+
+                    oWins();
+                }
+
+
+                return;
+            }
+
+
+            /*
+             * Pat
+             */
+
+            if (
+                game.in_stalemate()
+            ) {
+
+                finishDraw();
+
+                return;
+            }
+
+
+            /*
+             * Répétition
+             */
+
+            if (
+                game.in_threefold_repetition()
+            ) {
+
+                finishDraw();
+
+                return;
+            }
+
+
+            /*
+             * Matériel insuffisant
+             */
+
+            if (
+                game.insufficient_material()
+            ) {
+
+                finishDraw();
+
+                return;
+            }
+
+
+            /*
+             * Échec
+             */
+
+            if (
+                game.in_check()
+            ) {
+
+                moveSound.stop();
+
+                captureSound.stop();
+
+                checkSound.play();
+            }
+        }
+
+
+        function finishDraw() {
+
+            gameFinished = true;
+
+
+            moveSound.stop();
+
+            captureSound.stop();
+
+
+            mateSound.play();
+
+
+            /*
+             * Fonction conservée
+             * depuis le reste du projet.
+             */
+
+            draw();
+        }
+
+
+        /* =========================================================
+           GAGNANT
+        ========================================================= */
+
+        function showWinner(player) {
+
+            document
+                .getElementById(
+                    "player-red"
+                )
+                .classList.remove(
+                    "winner-player"
+                );
+
+
+            document
+                .getElementById(
+                    "player-blue"
+                )
+                .classList.remove(
+                    "winner-player"
+                );
+
+
+            if (
+                player === "red"
+            ) {
+
+                document
+                    .getElementById(
+                        "player-red"
+                    )
+                    .classList.add(
+                        "winner-player"
+                    );
+            }
+
+
+            if (
+                player === "blue"
+            ) {
+
+                document
+                    .getElementById(
+                        "player-blue"
+                    )
+                    .classList.add(
+                        "winner-player"
+                    );
+            }
+        }
+
+
+        /* =========================================================
+           ROTATION DES PIÈCES
+        ========================================================= */
+
+        function applyPieceRotation() {
+
+            document
+                .querySelectorAll(
+                    ".case .chess-piece-icon"
+                )
+                .forEach(
+                    icon => {
+
+                        icon.style.transform =
+                            piecesFlipped
+                                ? "rotate(180deg)"
+                                : "rotate(0deg)";
+                    }
+                );
+        }
+
+
+        function rotatePieces() {
+
+            piecesFlipped =
+                !piecesFlipped;
+
+
+            applyPieceRotation();
+        }
+
+
+        /* =========================================================
+           INITIALISATION
+        ========================================================= */
+
+        createBoard();
+
+    </script>
+
+</body>
+</html>
+
